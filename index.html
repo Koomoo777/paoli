@@ -191,8 +191,8 @@ const SEED_EX=[
 ];
 const SEED_TPL=[{id:'run-strength',name:'跑步力量',items:[['wallsit',5],['calf',5],['squat',5],['lunge',3],['bulgarian',3],['crab',3],['pushup',5],['plank',5]].map(([exId,sets])=>({exId,sets}))}];
 function seed(){return{exercises:JSON.parse(JSON.stringify(SEED_EX)),templates:JSON.parse(JSON.stringify(SEED_TPL)),sessions:[],active:null,
-  settings:{rest:60,strava:{clientId:'',clientSecret:'',mode:'merge',tok:null,athlete:''}}}}
-let S=load();
+  settings:{rest:60,strava:{clientId:'296998',clientSecret:'',mode:'merge',tok:null,athlete:''}}}}
+let S=load();if(!S.settings.strava.clientId)S.settings.strava.clientId='296998';
 function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);if(d&&d.exercises&&d.templates)return d}}catch(e){}return seed()}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
 const ui={sheet:null,wk:false,msg:''};
@@ -268,7 +268,7 @@ function vSettings(){
   <section class="card"><div class="row"><h3 class="grow">STRAVA</h3>${ok?`<span class="pill ok">已连接${c.athlete?' '+h(c.athlete):''}</span>`:'<span class="pill">未连接</span>'}</div>
     ${preview?'<p class="note">这个预览页面会拦截发往 Strava 的请求。把 App 部署到你自己的网址后，连接和上传才能生效。</p>':''}
     ${ui.msg?`<p class="note">${h(ui.msg)}</p>`:''}
-    <ol class="steps"><li>在 strava.com/settings/api 创建一个应用，Authorization Callback Domain 填 <code>${h(location.host||'你的网址域名')}</code></li><li>把页面上的 Client ID 和 Client Secret 填到下面</li><li>点“连接 Strava”并授权</li></ol>
+    <ol class="steps"><li>在 strava.com/settings/api 的“客户端密钥”一栏点“显示”，复制那串字符</li><li>粘贴到下面的 Client Secret</li><li>点“连接 Strava”并授权</li></ol>
     <div class="two"><label class="f" for="st-id">Client ID<input id="st-id" type="text" inputmode="numeric" data-f="st-id" value="${h(c.clientId)}"></label><label class="f" for="st-sec">Client Secret<input id="st-sec" type="password" data-f="st-sec" value="${h(c.clientSecret)}"></label></div>
     <div class="row">${c.clientId&&c.clientSecret?`<a class="btn go grow" href="${h(authUrl())}">${ok?'重新授权':'连接 Strava'}</a>`:'<span class="mute small grow">填好两项后出现连接按钮</span>'}${ok?'<button class="btn" data-act="st-off">断开</button>':''}</div>
     <label class="f" for="st-paste">授权后没有自动回到 App？把跳转后的完整网址粘贴到这里<input id="st-paste" type="text" placeholder="https://…?code=…"></label><button class="btn sm" data-act="st-paste">用这个网址完成连接</button>

@@ -102,12 +102,13 @@ h3{font-size:13px;font-weight:400;color:var(--mute);padding:6px 16px 0}
 .sheet .tile{background:var(--panel2)}
 .tile .no{position:absolute;left:12px;top:10px;font:600 13px var(--round);color:var(--mute)}
 .tile b{font-size:16px;line-height:1.3;font-weight:600}
-.fig{width:84px;height:84px;align-self:center;display:block;flex:none}
-.fig .b{stroke:var(--ink);fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
-.fig .h{stroke:var(--hot)} .fig .p{stroke:var(--mute);stroke-width:2.5;opacity:.6}
-.fig .d{stroke-dasharray:4 4;stroke:var(--hot);stroke-width:3}
+.fig{height:76px;width:auto;max-width:100%;align-self:center;display:block;flex:none}
+.fig polyline,.fig path{fill:none;stroke:var(--ink);stroke-linecap:round;stroke-linejoin:round}
+.fig .t{stroke-width:9} .fig .b{stroke-width:6} .fig .f{stroke-width:6;opacity:.32}
+.fig .h{stroke:var(--hot)} .fig .p{stroke:var(--mute);stroke-width:2.2;opacity:.7}
+.fig .d{stroke:var(--hot);stroke-width:2.6;stroke-dasharray:1 6} .fig .ar{stroke:var(--mute);stroke-width:2.4}
 .fig circle{fill:var(--ink)}
-.figbig{width:150px;height:150px}
+.figbig{height:140px}
 .thumb{width:84px;height:84px;border-radius:12px;object-fit:cover;align-self:center;flex:none}
 
 /* 弹层 */
@@ -166,8 +167,8 @@ code{background:var(--panel2);padding:1px 6px;border-radius:6px;font-size:13px;w
 .dots i{width:9px;height:9px;border-radius:50%;background:var(--panel2)}
 .dots i.on{background:var(--accent)} .dots i.cur{background:none;box-shadow:inset 0 0 0 2.5px var(--accent)}
 .dots span{font-size:15px;color:var(--mute);margin-left:6px}
-.hero{flex-direction:row;align-items:center;gap:8px;padding:16px 14px}
-.hero .fig,.hero .thumb{width:104px;height:104px}
+.hero{align-items:center;gap:10px;padding:16px 14px 18px}
+.hero .fig{height:118px} .hero .thumb{width:118px;height:118px}
 .heromain{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:2px}
 .big{font:700 58px/1.05 var(--round);text-align:center;letter-spacing:-.01em}
 .stepper{display:flex;align-items:center;gap:6px}
@@ -176,6 +177,18 @@ code{background:var(--panel2);padding:1px 6px;border-radius:6px;font-size:13px;w
 .unit{font-size:15px;color:var(--mute)}
 .kg{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:15px;color:var(--mute)}
 .kg input{width:76px;padding:6px 8px;text-align:center;background:var(--bg)}
+.tipc{gap:4px;border-left:4px solid var(--accent);border-radius:6px 16px 16px 6px}
+.tipc b{font-size:19px;line-height:1.35;font-weight:600}
+.cues.bad{list-style:none;padding-left:0;gap:12px}
+.cues.bad li{padding-left:22px;position:relative}
+.cues.bad li::before{content:"✕";position:absolute;left:0;top:1px;color:var(--red);font-weight:700;font-size:14px}
+.cues.bad em{display:block;font-style:normal;color:var(--tint);margin-top:2px}
+.bar .r{justify-self:end;display:flex;align-items:center}
+.bar .r button{min-width:44px;min-height:44px;color:var(--tint);font-size:17px;padding:0 8px;display:inline-flex;align-items:center;justify-content:center;transition:transform .2s}
+.bar .r button.holding{transform:scale(1.35)}
+.holdbtn{background:linear-gradient(rgba(0,0,0,.35),rgba(0,0,0,.35)) no-repeat left/0% 100%,var(--red);transition:background-size .15s}
+.holdbtn.holding{background-size:100% 100%;transition:background-size .9s linear}
+body{-webkit-touch-callout:none}
 .links{display:flex;justify-content:center;gap:24px;padding-top:4px}
 .links button{font-size:15px;color:var(--tint);min-height:36px}
 .links [data-confirm]{color:var(--red)}
@@ -197,56 +210,42 @@ code{background:var(--panel2);padding:1px 6px;border-radius:6px;font-size:13px;w
 "use strict";
 /* ---------- 数据 ---------- */
 const KEY='paoli.v1';
+// 每个动作 1 到 2 个姿势（起始 → 发力终点）。t 躯干，b 近侧肢体，f 远侧肢体（淡），h 主要发力部位，p 道具和标记，d 虚线
 const DG={
- wallsit:{head:[34,20],b:['30,30 30,58','30,34 38,46 49,54'],h:['30,58 57,58 57,89 65,89'],p:['24,6 24,90']},
- calf:{head:[48,14],b:['48,23 48,52','48,27 58,38 73,34','48,52 56,66 47,76'],h:['48,52 48,70 48,82 56,89'],p:['74,10 74,90','38,87 38,76','35,79 38,76 41,79']},
- squat:{head:[56,25],b:['52,34 38,58','52,36 64,40 76,38'],h:['38,58 60,62 54,89 63,89']},
- lunge:{head:[48,16],b:['48,25 48,54','48,28 54,40 49,50','48,54 40,78 24,82 22,89'],h:['48,54 66,60 66,89 74,89'],p:['80,48 92,48','89,45 92,48 89,51']},
- bulgarian:{head:[56,17],b:['54,26 50,54','54,29 58,41 54,51','50,54 40,78 22,64'],h:['50,54 68,60 66,89 74,89'],p:['8,90 8,66 26,66 26,90']},
- crab:{head:[50,15],b:['40,26 60,26','50,26 50,50','43,50 57,50','40,26 34,38 42,46','60,26 66,38 58,46'],h:['43,50 34,68 30,89','57,50 66,68 70,89'],d:['35,72 65,72'],p:['78,58 92,58','89,55 92,58 89,61']},
- pushup:{head:[22,56],b:['30,62 60,73 88,84 90,89'],h:['30,62 30,89 22,89']},
- plank:{head:[20,64],b:['28,70 28,88 14,88','58,76 88,83 90,89'],h:['28,70 58,76']},
- crunch:{head:[23,68],b:['55,86 72,66 86,88','32,76 31,62 25,65'],h:['55,86 32,76']},
- legraise:{head:[14,83],b:['22,86 52,86','24,88 42,88'],h:['52,86 84,56'],p:['92,68 92,54','89,57 92,54 95,57']},
- pullup:{head:[50,23],b:['41,34 59,34','50,34 50,62','44,62 56,62','45,62 45,82','55,62 55,82'],h:['34,14 28,30 41,34','66,14 72,30 59,34'],p:['20,14 80,14']}
+ wallsit:[{head:[32,22],t:'30,34 30,62',b:['52,62 52,90 61,91','30,37 40,45 33,50'],h:['30,62 52,62'],p:['22,6 22,92','46,62 46,68 52,68','30,56 36,56 36,62']}],
+ calf:[{head:[50,11],t:'50,22 50,50',f:['50,50 55,70 45,80'],b:['50,50 50,70','46,91 58,91','50,25 62,36 79,32'],h:['50,70 50,90'],p:['80,8 80,92']},
+       {head:[50,6],t:'50,17 50,45',f:['50,45 55,65 45,75'],b:['50,45 50,65','50,84 58,91','50,20 62,31 79,28'],h:['50,65 50,84'],p:['80,8 80,92','38,90 38,78','35,81 38,78 41,81']}],
+ squat:[{head:[50,11],t:'50,22 50,50',b:['50,70 50,90','46,91 60,91','50,25 62,28 74,28'],h:['50,50 50,70']},
+        {head:[59,35],t:'55,45 40,68',b:['62,66 54,90','48,91 64,91','55,47 67,47 79,45'],h:['40,68 62,66']}],
+ lunge:[{head:[50,11],t:'50,22 50,50',b:['50,70 50,90','46,91 60,91','50,25 58,36 52,46'],h:['50,50 50,70']},
+        {head:[48,23],t:'48,34 48,62',f:['48,62 44,84 28,88 26,91'],b:['66,68 66,90','62,91 75,91','48,37 56,48 50,58'],h:['48,62 66,68']}],
+ bulgarian:[{head:[55,11],t:'54,22 52,50',f:['52,50 40,70 22,68'],b:['62,72 62,90','58,91 71,91','54,25 61,36 55,46'],h:['52,50 62,72'],p:['8,92 8,70 26,70 26,92']},
+            {head:[59,27],t:'56,38 50,64',f:['50,64 40,84 22,68'],b:['66,68 64,90','60,91 73,91','56,41 63,52 56,60'],h:['50,64 66,68'],p:['8,92 8,70 26,70 26,92']}],
+ crab:[{head:[50,16],t:'50,28 50,54',b:['40,29 60,29','44,54 56,54','40,29 35,41 45,46','60,29 65,41 55,46','40,72 40,90','60,72 60,90'],h:['44,54 40,72','56,54 60,72'],d:['40,68 60,68']},
+       {head:[54,16],t:'54,28 54,54',b:['44,29 64,29','48,54 60,54','44,29 39,41 49,46','64,29 69,41 59,46','40,72 40,90','72,72 74,90'],h:['48,54 40,72','60,54 72,72'],d:['40,68 71,68'],p:['80,48 94,48','90,44 94,48 90,52']}],
+ pushup:[{head:[21,56],t:'30,62 58,72',b:['58,72 86,82 88,91'],h:['30,62 30,90']},
+         {head:[21,77],t:'30,80 58,83',b:['58,83 86,86 88,91'],h:['30,80 40,71 32,90']}],
+ plank:[{head:[21,65],t:'30,70 58,76',tc:1,b:['58,76 86,83 88,91','30,70 30,90 16,90'],d:['22,54 94,70']}],
+ crunch:[{head:[15,84],t:'26,87 54,87',tc:1,b:['54,87 70,66 84,90','26,87 20,77 14,79']},
+         {head:[21,69],t:'30,78 42,86 54,87',tc:1,b:['54,87 70,66 84,90','30,78 25,67 19,68'],p:['34,66 30,58','27,61 30,58 33,60']}],
+ legraise:[{head:[12,84],t:'22,87 50,87',tc:1,b:['50,87 88,81','22,89 40,90']},
+           {head:[12,84],t:'22,87 50,87',tc:1,b:['50,87 52,46','22,89 40,90'],p:['66,62 66,48','63,51 66,48 69,51']}],
+ pullup:[{nofloor:1,head:[50,38],t:'50,46 50,72',b:['42,46 58,46','45,72 55,72','45,72 45,90','55,72 55,90'],h:['36,20 39,33 42,46','64,20 61,33 58,46'],p:['20,20 80,20']},
+         {nofloor:1,head:[50,13],t:'50,30 50,56',b:['42,30 58,30','45,56 55,56','45,56 45,74','55,56 55,74'],h:['36,20 30,40 42,30','64,20 70,40 58,30'],p:['20,20 80,20']}]
 };
-const SEED_EX=[
- {id:'wallsit',name:'靠墙静蹲',type:'time',unit:'秒',target:45,dg:'wallsit',
-  cues:['后脑、上背、腰骶三点贴墙','大腿与地面平行，膝盖约 90°','膝盖在脚踝正上方，对准第二脚趾','重心压在脚跟和全脚掌，保持均匀呼吸'],
-  bad:['手撑在大腿上借力','膝盖内扣，或臀部滑到比膝盖还低']},
- {id:'calf',name:'单腿地面提踵',type:'reps',unit:'次/侧',target:15,dg:'calf',
-  cues:['指尖轻扶墙，只用来保持平衡','用大脚趾球发力垂直向上，顶到最高点停 1 秒','下放用 2 到 3 秒，脚跟轻触地面再起','膝盖保持伸直但不锁死，身体不前后晃'],
-  bad:['脚踝向外翻，重心落到小脚趾一侧','借弹震快速上下，没有顶峰停顿']},
- {id:'squat',name:'自重深蹲',type:'reps',unit:'次',target:15,dg:'squat',
-  cues:['双脚与肩同宽，脚尖外展 15° 到 30°','屈髋屈膝同时启动，像坐向身后的椅子','膝盖始终对准脚尖方向','胸口打开、腰背中立，蹲到大腿至少平行地面','起身时脚跟蹬地，髋和胸一起上升'],
-  bad:['膝盖内扣','起身时臀部先抬、上身前倒','脚跟离地']},
- {id:'lunge',name:'箭步走',type:'reps',unit:'步',target:20,dg:'lunge',
-  cues:['步幅以前后膝都接近 90° 为准','上身挺直，核心收紧，目视前方','后膝垂直下沉，接近地面但不砸地','前脚全脚掌蹬地，把身体带到下一步'],
-  bad:['前膝内扣或身体左右晃','步子太小，前膝大幅超过脚尖且脚跟离地']},
- {id:'bulgarian',name:'自重保加利亚蹲',type:'reps',unit:'次/侧',target:10,dg:'bulgarian',
-  cues:['后脚脚背搭在约膝盖高的凳子上','前脚离凳两个脚掌左右，下蹲时前小腿接近垂直','重心放在前腿，后腿只负责平衡','上身略前倾，髋部保持水平，垂直下沉'],
-  bad:['前脚离凳太近，膝盖压力大','用后腿蹬凳子借力','骨盆向一侧旋转或倾斜']},
- {id:'crab',name:'弹力带螃蟹行走',type:'reps',unit:'步/向',target:15,dg:'crab',
-  cues:['弹力带套在膝上方或脚踝，保持微屈髋屈膝的半蹲','全程让弹力带保持张力，双脚不并拢','横向迈步由臀部外侧发力，脚尖朝前','上身稳定，不随步伐左右摇摆'],
-  bad:['膝盖被弹力带拉向内','拖着后脚走，或靠上身晃动带动']},
- {id:'pushup',name:'俯卧撑',type:'reps',unit:'次',target:15,dg:'pushup',
-  cues:['双手略宽于肩，手腕在肩的正下方','从头到脚跟一条直线，收紧腹部和臀部','下放时手肘与躯干约成 45°，胸口接近地面','推起到手臂伸直，肩胛自然前伸'],
-  bad:['塌腰或撅臀','手肘外展到 90°','只做半程']},
- {id:'plank',name:'平板支撑',type:'time',unit:'秒',target:45,dg:'plank',
-  cues:['手肘在肩的正下方，前臂平行','收腹、夹臀，骨盆略后倾','头、背、臀、脚跟成一条直线','前臂向下推地，保持自然呼吸'],
-  bad:['塌腰，腰椎受压','臀部抬得过高','憋气、耸肩']},
- {id:'crunch',name:'卷腹',type:'reps',unit:'次',target:30,dg:'crunch',
-  cues:['仰卧屈膝，双脚踩实，下背全程贴地','双手轻扶耳侧，手肘打开，不抱头发力','呼气，用腹部把肩胛骨卷离地面，胸口靠向骨盆','顶峰停一下，吸气慢慢放回，肩膀不完全落地'],
-  bad:['双手拉扯脖子，下巴顶住胸口','整个上身坐起来，变成髋部发力','借惯性快速弹起']},
- {id:'legraise',name:'平躺抬腿',type:'reps',unit:'次',target:12,dg:'legraise',
-  cues:['仰卧，双手放身体两侧或垫在臀部下方','先收紧腹部，把下背压向地面','双腿并拢、膝盖微屈，抬到与地面接近垂直','下放用 2 到 3 秒，脚跟接近地面但不落地'],
-  bad:['下放时腰部拱起离开地面','靠甩腿借力','下放太快，没有控制']},
- {id:'pullup',name:'引体向上',type:'reps',unit:'次',target:3,dg:'pullup',
-  cues:['正手握杠，略宽于肩，从手臂完全伸直的悬垂开始','先下沉肩胛、挺胸，再屈肘上拉','想着把手肘拉向身体两侧的口袋，下巴过杠','下放用 2 到 3 秒，回到手臂伸直','核心收紧，双腿不前后摆动'],
-  bad:['耸肩，只用手臂硬拉','蹬腿摆荡借力','只做半程，下放不到底']}
-];
+const SEED_EX=[{"id":"wallsit","name":"靠墙静蹲","type":"time","unit":"秒","target":45,"tip":"背后像有一把看不见的椅子，坐稳不动","cues":["背靠墙站好，双脚往前走一大步，两脚与髋同宽","后背贴着墙往下滑，滑到大腿和地面平行，像坐在椅子上","低头看一眼：膝盖在脚踝正上方，不超过脚尖，也不往里夹","双手自然垂在身体两侧或抱在胸前，正常呼吸，开始计时"],"feel":"大腿前侧发酸发热。如果是膝盖疼，就往上滑高一点。","bad":["手撑在大腿上 → 手垂在两侧或抱胸，不借力","膝盖往里夹 → 膝盖对准第二个脚趾","憋气硬撑 → 数着呼吸，慢吸慢呼"],"dg":"wallsit"},
+ {"id":"calf","name":"单腿地面提踵","type":"reps","unit":"次/侧","target":15,"tip":"2 秒踮起，顶端停 1 秒，3 秒放下","cues":["单脚站立，另一只脚勾在身后，指尖轻轻扶墙保持平衡","前脚掌用力踩地，把脚跟尽量抬高，像踮脚去够高处的东西","在最高点停 1 秒","慢慢放下，用 3 秒，脚跟轻轻碰地就接着做下一个"],"feel":"小腿后侧发紧发酸。","bad":["像弹簧一样快速上下 → 放慢，尤其是放下的过程","只抬到一半 → 每一次都顶到最高","脚踝往外歪 → 把重心压在大脚趾根部","扶墙的手在用力撑 → 只用指尖轻扶"],"dg":"calf"},
+ {"id":"squat","name":"自重深蹲","type":"reps","unit":"次","target":15,"tip":"屁股往后找椅子，膝盖跟着脚尖的方向走","cues":["双脚比髋略宽，脚尖稍微朝外，挺胸，双手前伸帮助平衡","先把屁股往后送，再弯膝盖往下坐，像身后有一把矮椅子","蹲到大腿和地面平行；如果脚跟要离地或者腰开始弯，就停在那之前","全脚掌踩地，脚跟发力站起来，屁股和胸口一起升，站直时呼气"],"feel":"大腿前侧和屁股在用力，腰不应该酸。","bad":["膝盖往里夹 → 膝盖始终对着第二个脚趾","脚跟离地 → 重心往后放，或者蹲浅一点","站起时屁股先翘、上身趴下去 → 想着胸口和屁股同时上升","弯腰驼背 → 挺胸，眼睛看正前方"],"dg":"squat"},
+ {"id":"lunge","name":"箭步走","type":"reps","unit":"步","target":20,"tip":"身体像电梯一样直上直下，不往前冲","cues":["站直，两脚与髋同宽，像踩在两条铁轨上，而不是走钢丝","向前迈一大步，前脚全脚掌落地","身体垂直下沉，直到前后两个膝盖都弯成大约直角，后膝离地一拳","前脚踩地发力站起，把后腿带到前面，直接迈出下一步"],"feel":"前腿的大腿和屁股。","bad":["两脚踩成一条线，身体左右晃 → 两脚始终保持髋宽","步子太小，前脚跟离地 → 步子迈大一点","上身往前扑 → 挺胸，眼睛看前方","靠后腿蹬地 → 重心放在前脚，用前腿站起来"],"dg":"lunge"},
+ {"id":"bulgarian","name":"自重保加利亚蹲","type":"reps","unit":"次/侧","target":10,"tip":"重量全在前腿，后脚只是搭着","cues":["背对椅子站，离椅子大约两步，把一只脚的脚背搭在椅面上，椅子约膝盖高","调整前脚的位置：蹲到底时前小腿接近竖直。两脚左右保持髋宽，不要在一条线上","上身稍微前倾，垂直往下蹲，后膝靠近地面","前脚全脚掌踩地，站起来"],"feel":"前腿的大腿和屁股。后腿大腿前侧有拉伸感是正常的。","bad":["前脚离椅子太近，膝盖顶得难受 → 前脚再往前挪一点","后腿蹬椅子借力 → 后脚只是轻轻搭着","前膝往里倒 → 膝盖稍微朝小脚趾方向推","站不稳 → 一只手扶墙，先把动作做对"],"dg":"bulgarian"},
+ {"id":"crab","name":"弹力带螃蟹行走","type":"reps","unit":"步/向","target":15,"tip":"全程半蹲，弹力带永远绷着","cues":["弹力带套在膝盖上方（想更难就套在脚踝），两脚与髋同宽，把带子撑紧","屁股往后坐一点，膝盖微弯，保持这个半蹲的高度","一只脚向侧面迈一小步，脚尖朝正前方","另一只脚慢慢跟上，但不要并拢，停在带子还绷紧的位置","走完规定的步数，再朝反方向走回来"],"feel":"屁股外侧偏上的位置发酸，而不是大腿前侧。","bad":["膝盖被带子拉得往里夹 → 膝盖主动往外撑，对准脚尖","走着走着站直了 → 半蹲的高度从头到尾不变","两脚并拢，带子松了 → 步子小一点，带子始终绷着","上身左右摇晃 → 上身不动，只动腿"],"dg":"crab"},
+ {"id":"pushup","name":"俯卧撑","type":"reps","unit":"次","target":15,"tip":"全身像一块木板，一起下一起上","cues":["双手撑地，比肩略宽，手在肩膀正下方，脚尖着地","收紧肚子、夹紧屁股，从头到脚跟成一条直线","弯手肘往下，手肘朝斜后方，从上面看身体像箭头而不是 T 字，胸口降到离地一拳","用力推地撑起，直到手臂伸直"],"feel":"胸口、上臂后侧和肩膀前侧。腰不应该有压力。","bad":["腰塌下去 → 夹紧屁股，收紧肚子","屁股撅得很高 → 把身体放平成一条线","手肘向两侧张开成 T 字 → 手肘往身体后方收","只下去一半 → 做不了完整的就改成膝盖着地"],"dg":"pushup"},
+ {"id":"plank","name":"平板支撑","type":"time","unit":"秒","target":45,"tip":"夹屁股、收肚子，身体一条直线","cues":["趴下，前臂撑地，手肘在肩膀正下方","脚尖踩地，把身体撑离地面","夹紧屁股、收紧肚子，像有人要往你肚子上打一拳","头、背、屁股、脚跟成一条直线，眼睛看两手之间的地面，保持呼吸"],"feel":"肚子发酸发抖。如果是腰酸，说明腰塌下去了。","bad":["腰塌下去 → 夹紧屁股，把肚脐往上提","屁股撅高 → 降到和肩膀一样高","憋气 → 小口、不间断地呼吸","姿势垮了还在硬撑 → 姿势一垮就停，记下这个时间"],"dg":"plank"},
+ {"id":"crunch","name":"卷腹","type":"reps","unit":"次","target":30,"tip":"肋骨往骨盆靠，肩膀离地就够了","cues":["仰卧，屈膝，双脚踩地，后腰贴住地面","双手轻放在耳后或交叉抱胸，下巴和胸口之间留一个拳头的距离","呼气，用肚子的力量把肩胛骨卷离地面，只需要抬起一点点","停一下，吸气慢慢放回，肩膀轻触地面就做下一个"],"feel":"上腹部收紧。脖子不应该酸。","bad":["手抱着头往前拽，脖子酸 → 手只是轻扶，眼睛看斜上方的天花板","整个上身坐起来 → 幅度小一点，后腰始终贴地","靠惯性快速甩 → 每次在顶端停一下","憋气 → 起来的时候呼气"],"dg":"crunch"},
+ {"id":"legraise","name":"平躺抬腿","type":"reps","unit":"次","target":12,"tip":"后腰始终压住地面，压不住就不要再往下放","cues":["仰卧，双腿伸直并拢，双手放在身体两侧；腰容易离地的话，把手垫在屁股下面","收紧肚子，把后腰压向地面，压到手伸不进去","呼气，把双腿抬到和地面垂直","吸气，用 2 到 3 秒慢慢放下，脚跟离地几厘米停住，不落地"],"feel":"下腹部。如果是腰酸，说明腰离地了。","bad":["放下时腰拱起来 → 只放到腰还压得住的高度，或者膝盖微屈","甩腿借力 → 放慢速度","脚落地休息 → 脚跟始终悬空"],"dg":"legraise"},
+ {"id":"pullup","name":"引体向上","type":"reps","unit":"次","target":3,"tip":"把手肘拉向裤子的后口袋","cues":["双手正握单杠，比肩略宽，手臂完全伸直悬挂","先不要弯手臂：把肩膀往下沉、远离耳朵，身体会上升一小截","接着把手肘往下、往身体两侧拉，像要把单杠往下掰弯，直到下巴过杠","用 2 到 3 秒慢慢放下，回到手臂完全伸直"],"feel":"后背两侧，也就是腋下靠后的位置，以及手臂。","bad":["耸着肩、只用手臂拉 → 先沉肩，再拉","蹬腿、身体摆荡 → 收紧肚子，夹紧屁股，双腿并拢","只做半程 → 每次都放到手臂伸直","一个都拉不上去 → 先跳上去，再用 5 秒慢慢放下来"],"dg":"pullup"}];
 const SEED_TPL=[{id:'run-strength',name:'跑步力量',items:[['wallsit',5],['calf',5],['squat',5],['lunge',3],['bulgarian',3],['crab',3],['pushup',5],['plank',5],['crunch',5],['legraise',3],['pullup',3]].map(([exId,sets])=>({exId,sets}))}];
-function seed(){return{v:2,exercises:JSON.parse(JSON.stringify(SEED_EX)),templates:JSON.parse(JSON.stringify(SEED_TPL)),sessions:[],active:null,
+function seed(){return{v:3,exercises:JSON.parse(JSON.stringify(SEED_EX)),templates:JSON.parse(JSON.stringify(SEED_TPL)),sessions:[],active:null,
   settings:{rest:60,strava:{clientId:'296998',clientSecret:'',mode:'merge',tok:null,athlete:''}}}}
 let S=load();if(!S.settings.strava.clientId)S.settings.strava.clientId='296998';
 function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);if(d&&d.exercises&&d.templates)return d}}catch(e){}return seed()}
@@ -263,12 +262,23 @@ const pad=n=>String(n).padStart(2,'0');
 const mmss=sec=>{sec=Math.max(0,Math.round(sec));return pad(Math.floor(sec/60))+':'+pad(sec%60)};
 const dur=sec=>{const m=Math.round(sec/60);return m<60?m+' 分钟':Math.floor(m/60)+' 小时 '+(m%60)+' 分'};
 const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+function pose(d,ox){
+  const pl=(a,c)=>(a||[]).map(q=>`<polyline class="${c}" points="${q}"/>`).join('');
+  return `<g transform="translate(${ox} 0)">${d.nofloor?'':'<polyline class="p" points="4,92 96,92"/>'}${pl(d.p,'p')}${pl(d.f,'f')}<polyline class="t${d.tc?' h':''}" points="${d.t}"/>${pl(d.b,'b')}${pl(d.h,'b h')}${pl(d.d,'d')}<circle cx="${d.head[0]}" cy="${d.head[1]}" r="7"/></g>`;
+}
 function fig(ex,cls){
   if(ex&&ex.img)return `<img class="thumb ${cls||''}" src="${ex.img}" alt="">`;
   const d=ex&&DG[ex.dg];
-  if(!d)return `<svg class="fig ${cls||''}" viewBox="0 0 100 100" aria-hidden="true"><polyline class="b p" points="6,90 94,90"/><polyline class="b p" points="30,50 70,50"/><polyline class="b p" points="50,30 50,70"/></svg>`;
-  const pl=(a,c)=>(a||[]).map(p=>`<polyline class="b ${c}" points="${p}"/>`).join('');
-  return `<svg class="fig ${cls||''}" viewBox="0 0 100 100" role="img" aria-label="${h(ex.name)}示意图"><polyline class="b p" points="6,90 94,90"/>${pl(d.p,'p')}${pl(d.b,'')}${pl(d.h,'h')}${pl(d.d,'d')}<circle cx="${d.head[0]}" cy="${d.head[1]}" r="6.5"/></svg>`;
+  if(!d)return `<svg class="fig ${cls||''}" viewBox="0 0 100 100" style="aspect-ratio:1" aria-hidden="true"><polyline class="p" points="4,92 96,92"/><polyline class="p" points="34,50 66,50"/><polyline class="p" points="50,34 50,66"/></svg>`;
+  const n=d.length,W=n*100+(n-1)*16;
+  return `<svg class="fig ${cls||''}" viewBox="0 0 ${W} 100" style="aspect-ratio:${W}/100" role="img" aria-label="${h(ex.name)}示意图">${d.map((q,k)=>pose(q,k*116)).join('')}${n>1?'<path class="ar" d="M102 50h11m-4-4 4 4-4 4"/>':''}</svg>`;
+}
+function teach(e){
+  const bad=(e.bad||[]).map(x=>{const q=String(x).split('→');return `<li>${h(q[0].trim())}${q[1]?`<em>改：${h(q.slice(1).join('→').trim())}</em>`:''}</li>`}).join('');
+  return (e.tip?`<section class="card tipc"><span class="small mute">记住一句话</span><b>${h(e.tip)}</b></section>`:'')
+    +(e.cues&&e.cues.length?`<h3>怎么做</h3><section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:'')
+    +(e.feel?`<h3>做对了的感觉</h3><section class="card"><p>${h(e.feel)}</p></section>`:'')
+    +(bad?`<h3>常见错误和改法</h3><section class="card"><ul class="cues bad">${bad}</ul></section>`:'');
 }
 function logText(s){
   const lines=s.items.map(it=>{const dn=it.sets.filter(x=>x.done);if(!dn.length)return null;
@@ -340,13 +350,13 @@ function vSettings(){
     <p class="small mute">连接后，每次结束训练会自动在 Strava 新建一条力量训练，写入动作和组数。</p>
   </section>
   <section class="card"><h3>备份</h3><p class="small mute">数据只保存在这台手机的这个 App 里。换手机或清除网站数据前，先复制一份备份。</p><div class="row"><button class="btn grow" data-act="backup">备份与恢复</button></div></section>
-  <p class="small mute" style="text-align:center">版本 6</p>`;
+  <p class="small mute" style="text-align:center">版本 7</p>`;
 }
 
 /* ---------- 弹层 ---------- */
 function renderSheet(){
   const el=$('#sheet'),s=ui.sheet;el.classList.toggle('on',!!s);if(!s){el.innerHTML='';return}
-  el.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'+({tpl:shTpl,ex:shEx,exEdit:shExEdit,pick:shPick,session:shSession,backup:shBackup})[s.t](s)+'</div>';
+  el.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'+({tpl:shTpl,ex:shEx,exEdit:shExEdit,pick:shPick,session:shSession,backup:shBackup,drop:shDrop})[s.t](s)+'</div>';
 }
 const shHead=(t,extra)=>`<header>${extra||''}<h2>${t}</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>`;
 function shTpl(s){
@@ -360,9 +370,8 @@ function shTpl(s){
 function shEx(s){
   const e=exById(s.id);if(!e)return shHead('动作不存在');
   return shHead(h(e.name),s.back?`<button class="btn sm" data-act="open-tpl" data-id="${s.back}">返回</button>`:'')+`<div class="body">${fig(e,'figbig')}
-    <p class="mute small" style="text-align:center">每组目标 ${e.target} ${h(e.unit)}${DG[e.dg]&&!e.img?'，红色是主要发力部位':''}</p>
-    <h3>姿势要点</h3>${e.cues&&e.cues.length?`<ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol>`:'<p class="mute">还没有填写要点。</p>'}
-    ${e.bad&&e.bad.length?`<h3>常见错误</h3><ul class="cues bad">${e.bad.map(c=>`<li>${h(c)}</li>`).join('')}</ul>`:''}</div>
+    <p class="mute small" style="text-align:center">每组目标 ${e.target} ${h(e.unit)}${DG[e.dg]&&!e.img?'，橙色是主要发力的部位':''}</p>
+    ${teach(e)||'<p class="mute">还没有填写教学内容。</p>'}</div>
     <footer><button class="btn" data-act="ex-edit" data-id="${e.id}">编辑</button><button class="btn go" data-act="close">知道了</button></footer>`;
 }
 function shExEdit(s){
@@ -372,8 +381,10 @@ function shExEdit(s){
     <label class="f" for="e-name">名称<input id="e-name" type="text" value="${h(e.name)}" placeholder="例如：臀桥"></label>
     <div class="two"><label class="f" for="e-unit">计量单位<select id="e-unit">${units.map(u=>`<option ${u===e.unit?'selected':''}>${u}</option>`).join('')}</select></label><label class="f" for="e-target">每组目标<input id="e-target" type="number" inputmode="numeric" value="${e.target}"></label></div>
     <label class="row" for="e-w"><input id="e-w" type="checkbox" ${e.weighted?'checked':''}><span>这个动作要记录负重（kg）</span></label>
-    <label class="f" for="e-cues">姿势要点，每行一条<textarea id="e-cues">${h((e.cues||[]).join('\n'))}</textarea></label>
-    <label class="f" for="e-bad">常见错误，每行一条<textarea id="e-bad">${h((e.bad||[]).join('\n'))}</textarea></label>
+    <label class="f" for="e-tip">一句话口诀<input id="e-tip" type="text" value="${h(e.tip||'')}"></label>
+    <label class="f" for="e-cues">动作步骤，每行一步<textarea id="e-cues">${h((e.cues||[]).join('\n'))}</textarea></label>
+    <label class="f" for="e-feel">做对了的感觉<input id="e-feel" type="text" value="${h(e.feel||'')}"></label>
+    <label class="f" for="e-bad">常见错误，每行一条，写成“错误 → 改法”<textarea id="e-bad">${h((e.bad||[]).join('\n'))}</textarea></label>
     <label class="f" for="e-img">示意图片（可选，用你自己的照片替换简笔图）<input id="e-img" type="file" accept="image/*"></label>
     ${e.img?'<button class="btn sm ghost" data-act="ex-noimg" data-id="'+s.id+'">移除当前图片</button>':''}
     ${s.id?'<button class="btn ghost" data-act="ex-del" data-id="'+s.id+'" data-confirm="再点一次，删除这个动作">删除动作</button>':''}
@@ -393,6 +404,7 @@ function shSession(s){
     ${!conn?'<p class="mute small">在“设置”里连接 Strava 后，训练结束会自动上传。</p>':''}
     <button class="btn ghost" data-act="s-del" data-id="${x.id}" data-confirm="再点一次，删除这条记录">删除记录</button></div>`;
 }
+function shDrop(){return shHead('确定放弃吗？')+`<div class="body"><p class="mute">这次训练不会保存，也不会上传到 Strava。</p></div><footer><button class="btn" data-act="close">取消</button><button class="btn stop holdbtn" data-hold="w-drop" data-ms="900">长按确定放弃</button></footer>`}
 function shBackup(){return shHead('备份与恢复')+`<div class="body"><label class="f" for="bk">全部数据（不含 Strava 密钥）。复制后存到备忘录；恢复时把内容粘贴回来。<textarea id="bk" style="min-height:180px">${h(JSON.stringify({...S,active:null,settings:{...S.settings,strava:{...S.settings.strava,clientSecret:'',tok:null}}}))}</textarea></label><p class="small mute" id="bk-msg"></p></div><footer><button class="btn" data-act="bk-copy">复制</button><button class="btn" data-act="bk-load" data-confirm="再点一次，用文本框内容覆盖现有数据">恢复</button></footer>`}
 
 /* ---------- 训练中 ---------- */
@@ -421,26 +433,26 @@ function renderWk(){
   const kg=it.weighted&&j>=0?`<label class="kg" for="w-${i}-${j}">负重<input id="w-${i}-${j}" type="number" inputmode="decimal" data-f="setw" data-i="${i}" data-j="${j}" value="${h(it.sets[j].w||'')}">kg</label>`:'';
   el.innerHTML=`<div class="wk"><header class="bar"><button data-act="w-min" aria-label="收起"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button>
     <div class="pager"><button data-act="w-go" data-d="-1" ${i?'':'disabled'} aria-label="上一个动作"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span>${i+1} / ${n}</span><button data-act="w-go" data-d="1" ${i<n-1?'':'disabled'} aria-label="下一个动作"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
-    <button data-act="w-finish" data-confirm="确认结束">结束</button></header>
+    <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="确认结束">结束</button></div></header>
   <div class="prog"><i style="width:${tot?dn/tot*100:0}%"></i></div>
   <div class="list">
-    <div class="xhead"><h1>${h(it.name)}</h1><span class="clock" id="clock">00:00</span></div>
+    <div class="xhead"><h1>${h(it.name)}</h1>${a.pAt?'<span class="pill wait">已暂停</span>':''}<span class="clock" id="clock">00:00</span></div>
     <div class="dots">${it.sets.map((x,k)=>`<i class="${x.done?'on':k===j?'cur':''}"></i>`).join('')}<span>${j<0?'已完成':'第 '+(j+1)+' 组'}，共 ${it.sets.length} 组</span></div>
     <section class="card hero">${fig(e)}<div class="heromain">${main}${kg}</div></section>
-    ${e.cues&&e.cues.length?`<h3>姿势要点</h3><section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:''}
-    ${e.bad&&e.bad.length?`<h3>常见错误</h3><section class="card"><ul class="cues bad">${e.bad.map(c=>`<li>${h(c)}</li>`).join('')}</ul></section>`:''}
-    <div class="links">${it.sets.some(x=>x.done)?'<button data-act="undo">撤销上一组</button>':''}<button data-act="w-drop" data-confirm="再点一次，放弃本次训练">放弃训练</button></div>
+    ${teach(e)}
+    ${it.sets.some(x=>x.done)?'<div class="links"><button data-act="undo">撤销上一组</button></div>':''}
   </div>
-  <footer><div class="rest" id="rest"><span class="mute">休息</span><span class="t num" id="tt"></span><span class="grow"></span><button class="btn sm tint" data-act="t-add">+15 秒</button><button class="btn sm tint" data-act="t-skip">跳过</button></div>${btn}</footer></div>`;
+  <footer><div class="rest" id="rest"><span class="mute">休息</span><span class="t num" id="tt"></span><span class="grow"></span><button class="btn sm tint" data-act="t-add">+15 秒</button><button class="btn sm tint" data-act="t-skip">跳过</button></div>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':btn}</footer></div>`;
   paintTick();
 }
+const elapsed=a=>((a.pAt||Date.now())-a.start-(a.pz||0))/1000;
 function paintTick(){
   const a=S.active;if(!a||!ui.wk)return;
-  const c=$('#clock');if(c)c.textContent=mmss((Date.now()-a.start)/1000);
-  if(T&&T.kind==='hold'){const b=$('#big');if(b&&T.i===a.cur)b.textContent=mmss((Date.now()-T.start)/1000)}
+  const now=a.pAt||Date.now(),c=$('#clock');if(c)c.textContent=mmss(elapsed(a));
+  if(T&&T.kind==='hold'){const b=$('#big');if(b&&T.i===a.cur)b.textContent=mmss((now-T.start)/1000)}
   const r=$('#rest');if(!r)return;
-  if(T&&T.kind==='rest'){const left=(T.end-Date.now())/1000;
-    if(left<=0){T=null;beep();r.classList.remove('on')}else{r.classList.add('on');$('#tt').textContent=mmss(left)}}
+  if(T&&T.kind==='rest'){const left=(T.end-now)/1000;
+    if(left<=0&&!a.pAt){T=null;beep();r.classList.remove('on')}else{r.classList.add('on');$('#tt').textContent=mmss(left)}}
   else r.classList.remove('on');
 }
 function startRest(){const r=S.settings.rest;T=r>0?{kind:'rest',end:Date.now()+r*1000,label:'组间休息'}:null}
@@ -456,7 +468,7 @@ function startWorkout(tplId){
 }
 function finishWorkout(){
   const a=S.active;if(!a)return;
-  const s={id:a.id,name:a.name,start:a.start,end:Date.now(),items:a.items,strava:{state:'none'}};
+  const s={id:a.id,name:a.name,start:a.start,end:a.start+Math.round(elapsed(a)*1000),items:a.items,strava:{state:'none'}};
   S.sessions.unshift(s);S.active=null;T=null;ui.wk=false;save();
   try{wake&&wake.release()}catch(e){}
   ui.sheet={t:'session',id:s.id};if(route()!=='me'){ui.keep=true;location.hash='me'}render();
@@ -555,7 +567,10 @@ const A={
   'w-end'(){finishWorkout();return false},
   't-add'(){if(T&&T.kind==='rest')T.end+=15000;paintTick();return false},
   't-skip'(){T=null;paintTick();return false},
-  'w-drop'(){S.active=null;T=null;ui.wk=false;save()},
+  'w-pause'(){prime();const a=S.active,now=Date.now();
+    if(a.pAt){const d=now-a.pAt;a.pz=(a.pz||0)+d;a.pAt=null;if(T){if(T.kind==='rest')T.end+=d;else T.start+=d}}else a.pAt=now;save()},
+  'w-askdrop'(){ui.sheet={t:'drop'}},
+  'w-drop'(){S.active=null;T=null;ui.wk=false;ui.sheet=null;save()},
   'w-finish'(){finishWorkout();return false},
   'open-session'(b){ui.sheet={t:'session',id:b.dataset.id}},
   's-del'(b){S.sessions=S.sessions.filter(s=>s.id!==b.dataset.id);save();ui.sheet=null},
@@ -571,7 +586,7 @@ const A={
 function saveEx(id){
   const name=$('#e-name').value.trim();if(!name){$('#e-name').focus();return}
   const unit=$('#e-unit').value,lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean);
-  const data={name,unit,type:unit.indexOf('秒')===0?'time':'reps',target:Math.max(1,+$('#e-target').value||1),weighted:$('#e-w').checked,cues:lines($('#e-cues').value),bad:lines($('#e-bad').value)};
+  const data={name,unit,type:unit.indexOf('秒')===0?'time':'reps',target:Math.max(1,+$('#e-target').value||1),weighted:$('#e-w').checked,cues:lines($('#e-cues').value),bad:lines($('#e-bad').value),tip:$('#e-tip').value.trim(),feel:$('#e-feel').value.trim()};
   let e=id&&exById(id);if(e)Object.assign(e,data);else{e={id:uid(),...data};S.exercises.push(e)}
   const f=$('#e-img').files[0],fin=()=>{if(!save()){delete e.img;save()}ui.sheet={t:'ex',id:e.id};render()};
   if(!f)return fin();
@@ -579,7 +594,15 @@ function saveEx(id){
   img.onload=()=>{const k=Math.min(1,480/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);e.img=c.toDataURL('image/jpeg',.72);URL.revokeObjectURL(url);fin()};
   img.onerror=fin;img.src=url;
 }
+// 长按：按住到时间才触发，松手或移开就取消
+let lp=null,lpFired=false;
+const lpEnd=()=>{if(lp){clearTimeout(lp);lp=null}document.querySelectorAll('.holding').forEach(x=>x.classList.remove('holding'))};
+document.addEventListener('pointerdown',ev=>{lpFired=false;const b=ev.target.closest('[data-hold]');if(!b)return;lpEnd();b.classList.add('holding');
+  lp=setTimeout(()=>{lp=null;lpFired=true;b.classList.remove('holding');if(A[b.dataset.hold](b)!==false)render()},+b.dataset.ms||700)});
+['pointerup','pointercancel','pointerleave'].forEach(t=>document.addEventListener(t,lpEnd,true));
+document.addEventListener('contextmenu',ev=>{if(ev.target.closest&&ev.target.closest('[data-hold]'))ev.preventDefault()});
 document.addEventListener('click',ev=>{
+  if(lpFired){lpFired=false;return}
   if(ev.target.id==='sheet'){ui.sheet=null;return render()}
   const b=ev.target.closest('[data-act]');if(!b||b.disabled)return;
   if(!armed(b))return;
@@ -609,6 +632,9 @@ function fitH(){ // iPhone 桌面图标模式下系统给的初始高度偏短�
   document.documentElement.style.setProperty('--H',Math.max(innerHeight,port?a:b)+'px');
 }
 fitH();addEventListener('resize',fitH);addEventListener('orientationchange',()=>setTimeout(fitH,300));setTimeout(()=>{fitH();try{scrollTo(0,0)}catch(e){}},300);
+if((S.v||1)<3){ // 第 3 版：内置动作换成新的教学内容
+  SEED_EX.forEach(n=>{const e=exById(n.id);if(e){e.tip=n.tip;e.cues=n.cues.slice();e.feel=n.feel;e.bad=n.bad.slice();e.dg=n.dg}});S.v=3;save();
+}
 tick=setInterval(paintTick,250);
 if(S.active)ui.wk=false;
 render();

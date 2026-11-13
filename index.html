@@ -64,6 +64,7 @@ h1{font-size:34px;line-height:1.2;font-weight:700;letter-spacing:.01em}
 .ringbtn .core svg{position:static;width:56px;height:56px;fill:var(--on-accent);margin-left:6px}
 .center h1{font-size:28px}
 .center .sub{font-size:15px;color:var(--mute);margin-top:6px}
+.center .hint{font-size:12px;line-height:1.5;color:var(--mute);max-width:250px;margin-top:14px;opacity:.85}
 .center .wk-goal{font:600 13px var(--round);color:var(--mute);margin-top:22px;padding:6px 12px;border-radius:99px;background:var(--panel)}
 
 /* 分组卡片与按钮 */
@@ -328,6 +329,7 @@ function vHome(){
     <h1>${h(a?a.name:t?t.name:'还没有训练模版')}</h1>
     <p class="sub">${a?'训练进行中，点按继续':t?t.items.length+' 个动作 · '+t.items.reduce((n,i)=>n+i.sets,0)+' 组':'在设置里新建一个'}</p>
     <p class="wk-goal">本周 ${w.count} / ${goal} 天</p>
+    <p class="hint">开始前先在 Apple Watch 上开一条“传统力量训练”，心率会随手表记录一起进到这里</p>
   </div>`;
 }
 function vMoves(){
@@ -338,7 +340,7 @@ function stPill(s){const st=s.strava||{};return st.state==='done'?'<span class="
 function vMe(){
   const w=weekInfo();
   const list=S.sessions.length?`<section class="card" style="gap:0;padding-top:2px;padding-bottom:2px">${S.sessions.map(s=>{const d=new Date(s.start);
-    return `<button class="hrow" data-act="open-session" data-id="${s.id}"><span class="date">${d.getMonth()+1}/${d.getDate()}</span><span class="grow"><b>${h(s.name)}</b><br><span class="mute small">${dur((s.end-s.start)/1000)} · ${s.items.reduce((a,i)=>a+i.sets.filter(x=>x.done).length,0)} 组</span></span>${stPill(s)}</button>`}).join('')}</section>`
+    return `<button class="hrow" data-act="open-session" data-id="${s.id}"><span class="date">${d.getMonth()+1}/${d.getDate()}</span><span class="grow"><b>${h(s.name)}</b><br><span class="mute small">${dur((s.end-s.start)/1000)} · ${s.items.reduce((a,i)=>a+i.sets.filter(x=>x.done).length,0)} 组${s.strava&&s.strava.hr?' · 心率 '+Math.round(s.strava.hr):''}</span></span>${stPill(s)}</button>`}).join('')}</section>`
     :'<section class="card"><p class="mute">还没有记录。完成第一次训练后会出现在这里。</p></section>';
   return `<div class="top"><a href="#home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>主页</a><a href="#prefs" aria-label="设置"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.8"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="9.3" stroke-width="2.6" stroke-dasharray="2.9 4.4" stroke-linecap="butt"/></svg></a></div>
   <h1>${WHO}</h1>
@@ -358,10 +360,10 @@ function vSettings(){
     <div class="two"><label class="f" for="st-id">Client ID<input id="st-id" type="text" inputmode="numeric" data-f="st-id" value="${h(c.clientId)}"></label><label class="f" for="st-sec">Client Secret<input id="st-sec" type="password" data-f="st-sec" value="${h(c.clientSecret)}"></label></div>
     <div class="row">${c.clientId&&c.clientSecret?`<a class="btn go grow" href="${h(authUrl())}">${ok?'重新授权':'连接 Strava'}</a>`:'<span class="mute small grow">填好两项后出现连接按钮</span>'}${ok?'<button class="btn" data-act="st-off">断开</button>':''}</div>
     <label class="f" for="st-paste">授权后没有自动回到 App？把跳转后的完整网址粘贴到这里<input id="st-paste" type="text" placeholder="https://…?code=…"></label><button class="btn sm" data-act="st-paste">用这个网址完成连接</button>
-    <p class="small mute">连接后，每次结束训练会自动在 Strava 新建一条力量训练，写入动作和组数。</p>
+    <p class="small mute">连接后，每次结束训练，App 会在 Strava 上找到 Apple Watch 记录的那条活动，把动作和组数写进去，并取回平均和最高心率。手表记录还没同步过来时会显示“等待手表记录”，下次打开 App 自动重试。</p>
   </section>
   <section class="card"><h3>备份</h3><p class="small mute">数据只保存在这台手机的这个 App 里。换手机或清除网站数据前，先复制一份备份。</p><div class="row"><button class="btn grow" data-act="backup">备份与恢复</button></div></section>
-  <p class="small mute" style="text-align:center">版本 8</p>`;
+  <p class="small mute" style="text-align:center">版本 9</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -411,7 +413,7 @@ function shSession(s){
     <pre class="log">${h(logText(x))||'没有完成的组'}</pre>
     <div class="row">${stPill(x)}<span class="mute small grow">${h(st.msg||'')}</span></div>
     ${st.state==='done'&&st.id?`<a class="btn" href="https://www.strava.com/activities/${st.id}">在 Strava 查看</a>`:''}
-    ${conn&&st.state!=='done'?`<div class="row"><button class="btn grow" data-act="s-sync" data-id="${x.id}">重新同步</button></div>`:''}
+    ${conn&&st.state!=='done'?`<div class="row"><button class="btn grow" data-act="s-sync" data-id="${x.id}">重新同步</button><button class="btn grow" data-act="s-create" data-id="${x.id}">没戴手表，直接新建</button></div>`:''}
     ${!conn?'<p class="mute small">在“设置”里连接 Strava 后，训练结束会自动上传。</p>':''}
     <button class="btn ghost" data-act="s-del" data-id="${x.id}" data-confirm="再点一次，删除这条记录">删除记录</button></div>`;
 }
@@ -534,7 +536,7 @@ function pickOverlap(list,s){ // 选出与本次训练时间重叠最多的 Stra
   return best;
 }
 async function syncSession(s,forceCreate){
-  const mode='create',done=()=>{save();render()};
+  const mode=forceCreate?'create':'merge',done=()=>{save();render()};
   s.strava={state:'pending',msg:'正在同步…'};render();
   try{
     const desc=logText(s);

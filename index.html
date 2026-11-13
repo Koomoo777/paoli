@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="跑力打卡">
+<link rel="apple-touch-icon" href="data:image/png;base64,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">
+<title>跑力打卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* 布局思路：单列手机应用。跑道红只用于“正在做/要做”的东西，完成用草地绿，数字用计分牌字体。 */
+:root{
+  --bg:#eef0ec; --panel:#ffffff; --panel2:#e3e6e0; --ink:#161b20; --mute:#667078; --line:#d3d8d0;
+  --track:#d2432a; --track-ink:#ffffff; --done:#23855a; --warn:#b26a00;
+  --display:"Barlow Condensed","DIN Condensed","Arial Narrow",sans-serif;
+  --body:-apple-system,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1317; --panel:#1a2027; --panel2:#252d36; --ink:#eef1f3; --mute:#93a0ab; --line:#2e3741;
+  --track:#ff6a4d; --track-ink:#1a0d08; --done:#4cc38a; --warn:#f0b24a; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0f1317; --panel:#1a2027; --panel2:#252d36; --ink:#eef1f3; --mute:#93a0ab; --line:#2e3741;
+  --track:#ff6a4d; --track-ink:#1a0d08; --done:#4cc38a; --warn:#f0b24a; color-scheme:dark;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);overscroll-behavior:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+:focus-visible{outline:2px solid var(--track);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{text-wrap:balance}
+.num{font-family:var(--display);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.mute{color:var(--mute)} .small{font-size:13px}
+
+#shell{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto}
+#app{flex:1;overflow-y:auto;padding:calc(env(safe-area-inset-top) + 18px) 16px 24px;display:flex;flex-direction:column;gap:16px}
+nav{display:grid;grid-template-columns:repeat(4,1fr);background:var(--panel);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav a{padding:12px 0 10px;text-align:center;text-decoration:none;color:var(--mute);font-size:14px;font-weight:600;border-top:3px solid transparent;margin-top:-1px}
+nav a.on{color:var(--ink);border-top-color:var(--track)}
+
+.head{display:flex;justify-content:space-between;align-items:end;gap:12px}
+.head h1{font-size:26px;line-height:1.2}
+.card{background:var(--panel);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border-radius:10px;background:var(--panel2);font-weight:600;text-decoration:none;color:var(--ink)}
+.btn.go{background:var(--track);color:var(--track-ink)}
+.btn.ok{background:var(--done);color:#fff}
+.btn.ghost{background:none;border:1px solid var(--line)}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px}
+.btn.wide{width:100%}
+.btn[data-armed]{background:var(--warn);color:#fff}
+.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--panel2);color:var(--mute);white-space:nowrap}
+.pill.ok{background:color-mix(in srgb,var(--done) 18%,transparent);color:var(--done)}
+.pill.wait{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
+.pill.bad{background:color-mix(in srgb,var(--track) 18%,transparent);color:var(--track)}
+
+/* 本周 */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;color:var(--mute)}
+.day i{width:100%;height:8px;border-radius:4px;background:var(--panel2)}
+.day.hit i{background:var(--done)} .day.today{color:var(--ink);font-weight:700}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stats div{display:flex;flex-direction:column}
+.stats b{font:600 30px/1 var(--display)}
+
+/* 动作格子 */
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{background:var(--panel);border-radius:14px;padding:10px 12px 12px;text-align:left;display:flex;flex-direction:column;gap:4px;position:relative;width:100%}
+.sheet .tile{background:var(--panel2)}
+.tile .no{position:absolute;left:10px;top:8px;font:600 15px var(--display);color:var(--mute)}
+.fig{width:84px;height:84px;align-self:center;display:block}
+.fig .b{stroke:var(--ink);fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round}
+.fig .h{stroke:var(--track)} .fig .p{stroke:var(--mute);stroke-width:2.5;opacity:.7}
+.fig .d{stroke-dasharray:4 4;stroke:var(--track);stroke-width:3}
+.fig circle{fill:var(--ink)}
+.figbig{width:150px;height:150px}
+.thumb{width:84px;height:84px;border-radius:10px;object-fit:cover;align-self:center}
+.tile b{font-size:16px;line-height:1.3}
+
+/* 弹层 */
+#sheet,#wk{position:fixed;inset:0;display:none}
+#sheet.on{display:flex;z-index:30;background:rgba(0,0,0,.45);align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);width:100%;max-width:560px;max-height:92%;border-radius:18px 18px 0 0;display:flex;flex-direction:column}
+.sheet header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.sheet header h2{flex:1;font-size:19px}
+.sheet .body{overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.sheet footer{padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;border-top:1px solid var(--line)}
+.sheet footer .btn{flex:1}
+.x{width:36px;height:36px;border-radius:50%;background:var(--panel2);font-size:18px}
+.cues{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.cues.bad li::marker{color:var(--track)}
+h3{font-size:13px;color:var(--mute);font-weight:600;letter-spacing:.06em}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--mute)}
+input[type=text],input[type=number],input[type=password],select,textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);width:100%;font-size:16px}
+textarea{min-height:92px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.erow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line)}
+.erow:last-child{border-bottom:0}
+.step{display:flex;align-items:center;gap:6px}
+.step button{width:34px;height:34px;border-radius:8px;background:var(--panel2);font-weight:700}
+.step span{min-width:22px;text-align:center;font:600 20px var(--display)}
+
+/* 训练中 */
+#wk.on{display:flex;z-index:20;background:var(--bg);justify-content:center}
+.wk{width:100%;max-width:560px;display:flex;flex-direction:column;height:100%}
+.wk header{padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;display:flex;align-items:center;gap:12px;background:var(--panel);border-bottom:1px solid var(--line)}
+.wk header .clock{font:700 34px/1 var(--display)}
+.wk .list{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.xc{background:var(--panel);border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;border-left:4px solid var(--line)}
+.xc.cur{border-left-color:var(--track)} .xc.fin{border-left-color:var(--done)}
+.xc .fig{width:52px;height:52px} .xc .thumb{width:52px;height:52px}
+.set{display:grid;grid-template-columns:26px 1fr auto auto;align-items:center;gap:8px}
+.set .n{font:600 18px var(--display);color:var(--mute)}
+.set .in{display:flex;align-items:center;gap:6px}
+.set input{width:68px;padding:8px;text-align:center;font:600 20px var(--display)}
+.set.done input{border-color:transparent;background:transparent}
+.chk{width:44px;height:40px;border-radius:10px;background:var(--panel2);font-weight:700;color:var(--mute)}
+.set.done .chk{background:var(--done);color:#fff}
+.hold{height:40px;padding:0 10px;border-radius:10px;background:var(--panel2);font-size:14px;font-weight:600}
+#tbar{display:none;align-items:center;gap:12px;padding:10px 16px;background:var(--ink);color:var(--bg)}
+#tbar.on{display:flex}
+#tbar .t{font:700 34px/1 var(--display);min-width:84px}
+#tbar .btn{background:rgba(127,127,127,.3);color:inherit}
+.wk footer{padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;gap:10px;background:var(--panel);border-top:1px solid var(--line)}
+.wk footer .btn{flex:1}
+.resume{background:var(--track);color:var(--track-ink);border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-weight:600}
+.hrow{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 0;border-bottom:1px solid var(--line)}
+.hrow:last-child{border-bottom:0}
+.hrow .date{font:600 22px/1 var(--display);width:54px}
+pre.log{margin:0;white-space:pre-wrap;font:14px/1.6 var(--body)}
+ol.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+code{background:var(--panel2);padding:1px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+.note{font-size:13px;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--warn) 14%,transparent)}
+@media (prefers-reduced-motion:no-preference){.btn,.chk{transition:background .15s}}
+</style>
+</head>
+<body>
+<div id="shell">
+  <main id="app"></main>
+  <nav id="nav">
+    <a href="#train">训练</a><a href="#moves">动作</a><a href="#history">历史</a><a href="#settings">设置</a>
+  </nav>
+</div>
+<div id="wk"></div>
+<div id="sheet"></div>
+<script>
+"use strict";
+/* ---------- 数据 ---------- */
+const KEY='paoli.v1';
+const DG={
+ wallsit:{head:[34,20],b:['30,30 30,58','30,34 38,46 49,54'],h:['30,58 57,58 57,89 65,89'],p:['24,6 24,90']},
+ calf:{head:[48,14],b:['48,23 48,52','48,27 58,38 73,34','48,52 56,66 47,76'],h:['48,52 48,70 48,82 56,89'],p:['74,10 74,90','38,87 38,76','35,79 38,76 41,79']},
+ squat:{head:[56,25],b:['52,34 38,58','52,36 64,40 76,38'],h:['38,58 60,62 54,89 63,89']},
+ lunge:{head:[48,16],b:['48,25 48,54','48,28 54,40 49,50','48,54 40,78 24,82 22,89'],h:['48,54 66,60 66,89 74,89'],p:['80,48 92,48','89,45 92,48 89,51']},
+ bulgarian:{head:[56,17],b:['54,26 50,54','54,29 58,41 54,51','50,54 40,78 22,64'],h:['50,54 68,60 66,89 74,89'],p:['8,90 8,66 26,66 26,90']},
+ crab:{head:[50,15],b:['40,26 60,26','50,26 50,50','43,50 57,50','40,26 34,38 42,46','60,26 66,38 58,46'],h:['43,50 34,68 30,89','57,50 66,68 70,89'],d:['35,72 65,72'],p:['78,58 92,58','89,55 92,58 89,61']},
+ pushup:{head:[22,56],b:['30,62 60,73 88,84 90,89'],h:['30,62 30,89 22,89']},
+ plank:{head:[20,64],b:['28,70 28,88 14,88','58,76 88,83 90,89'],h:['28,70 58,76']}
+};
+const SEED_EX=[
+ {id:'wallsit',name:'靠墙静蹲',type:'time',unit:'秒',target:45,dg:'wallsit',
+  cues:['后脑、上背、腰骶三点贴墙','大腿与地面平行，膝盖约 90°','膝盖在脚踝正上方，对准第二脚趾','重心压在脚跟和全脚掌，保持均匀呼吸'],
+  bad:['手撑在大腿上借力','膝盖内扣，或臀部滑到比膝盖还低']},
+ {id:'calf',name:'单腿地面提踵',type:'reps',unit:'次/侧',target:15,dg:'calf',
+  cues:['指尖轻扶墙，只用来保持平衡','用大脚趾球发力垂直向上，顶到最高点停 1 秒','下放用 2 到 3 秒，脚跟轻触地面再起','膝盖保持伸直但不锁死，身体不前后晃'],
+  bad:['脚踝向外翻，重心落到小脚趾一侧','借弹震快速上下，没有顶峰停顿']},
+ {id:'squat',name:'自重深蹲',type:'reps',unit:'次',target:15,dg:'squat',
+  cues:['双脚与肩同宽，脚尖外展 15° 到 30°','屈髋屈膝同时启动，像坐向身后的椅子','膝盖始终对准脚尖方向','胸口打开、腰背中立，蹲到大腿至少平行地面','起身时脚跟蹬地，髋和胸一起上升'],
+  bad:['膝盖内扣','起身时臀部先抬、上身前倒','脚跟离地']},
+ {id:'lunge',name:'箭步走',type:'reps',unit:'步',target:20,dg:'lunge',
+  cues:['步幅以前后膝都接近 90° 为准','上身挺直，核心收紧，目视前方','后膝垂直下沉，接近地面但不砸地','前脚全脚掌蹬地，把身体带到下一步'],
+  bad:['前膝内扣或身体左右晃','步子太小，前膝大幅超过脚尖且脚跟离地']},
+ {id:'bulgarian',name:'自重保加利亚蹲',type:'reps',unit:'次/侧',target:10,dg:'bulgarian',
+  cues:['后脚脚背搭在约膝盖高的凳子上','前脚离凳两个脚掌左右，下蹲时前小腿接近垂直','重心放在前腿，后腿只负责平衡','上身略前倾，髋部保持水平，垂直下沉'],
+  bad:['前脚离凳太近，膝盖压力大','用后腿蹬凳子借力','骨盆向一侧旋转或倾斜']},
+ {id:'crab',name:'弹力带螃蟹行走',type:'reps',unit:'步/向',target:15,dg:'crab',
+  cues:['弹力带套在膝上方或脚踝，保持微屈髋屈膝的半蹲','全程让弹力带保持张力，双脚不并拢','横向迈步由臀部外侧发力，脚尖朝前','上身稳定，不随步伐左右摇摆'],
+  bad:['膝盖被弹力带拉向内','拖着后脚走，或靠上身晃动带动']},
+ {id:'pushup',name:'俯卧撑',type:'reps',unit:'次',target:12,dg:'pushup',
+  cues:['双手略宽于肩，手腕在肩的正下方','从头到脚跟一条直线，收紧腹部和臀部','下放时手肘与躯干约成 45°，胸口接近地面','推起到手臂伸直，肩胛自然前伸'],
+  bad:['塌腰或撅臀','手肘外展到 90°','只做半程']},
+ {id:'plank',name:'平板支撑',type:'time',unit:'秒',target:45,dg:'plank',
+  cues:['手肘在肩的正下方，前臂平行','收腹、夹臀，骨盆略后倾','头、背、臀、脚跟成一条直线','前臂向下推地，保持自然呼吸'],
+  bad:['塌腰，腰椎受压','臀部抬得过高','憋气、耸肩']}
+];
+const SEED_TPL=[{id:'run-strength',name:'跑步力量',items:[['wallsit',5],['calf',5],['squat',5],['lunge',3],['bulgarian',3],['crab',3],['pushup',5],['plank',5]].map(([exId,sets])=>({exId,sets}))}];
+function seed(){return{exercises:JSON.parse(JSON.stringify(SEED_EX)),templates:JSON.parse(JSON.stringify(SEED_TPL)),sessions:[],active:null,
+  settings:{rest:60,strava:{clientId:'',clientSecret:'',mode:'merge',tok:null,athlete:''}}}}
+let S=load();
+function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);if(d&&d.exercises&&d.templates)return d}}catch(e){}return seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));return true}catch(e){return false}}
+const ui={sheet:null,wk:false,msg:''};
+let T=null,tick=null;
+
+/* ---------- 工具 ---------- */
+const $=s=>document.querySelector(s);
+const h=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const exById=id=>S.exercises.find(e=>e.id===id);
+const pad=n=>String(n).padStart(2,'0');
+const mmss=sec=>{sec=Math.max(0,Math.round(sec));return pad(Math.floor(sec/60))+':'+pad(sec%60)};
+const dur=sec=>{const m=Math.round(sec/60);return m<60?m+' 分钟':Math.floor(m/60)+' 小时 '+(m%60)+' 分'};
+const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+function fig(ex,cls){
+  if(ex&&ex.img)return `<img class="thumb ${cls||''}" src="${ex.img}" alt="">`;
+  const d=ex&&DG[ex.dg];
+  if(!d)return `<svg class="fig ${cls||''}" viewBox="0 0 100 100" aria-hidden="true"><polyline class="b p" points="6,90 94,90"/><polyline class="b p" points="30,50 70,50"/><polyline class="b p" points="50,30 50,70"/></svg>`;
+  const pl=(a,c)=>(a||[]).map(p=>`<polyline class="b ${c}" points="${p}"/>`).join('');
+  return `<svg class="fig ${cls||''}" viewBox="0 0 100 100" role="img" aria-label="${h(ex.name)}示意图"><polyline class="b p" points="6,90 94,90"/>${pl(d.p,'p')}${pl(d.b,'')}${pl(d.h,'h')}${pl(d.d,'d')}<circle cx="${d.head[0]}" cy="${d.head[1]}" r="6.5"/></svg>`;
+}
+function logText(s){
+  const lines=s.items.map(it=>{const dn=it.sets.filter(x=>x.done);if(!dn.length)return null;
+    const v=dn.map(x=>x.val+(x.w?'×'+x.w+'kg':''));const same=v.every(a=>a===v[0]);
+    return it.name+'  '+(same?dn.length+' 组 × '+v[0]:v.join(' / '))+' '+it.unit}).filter(Boolean);
+  return lines.join('\n');
+}
+function weekInfo(){
+  const now=new Date(),mon=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7));
+  const days=new Set(S.sessions.map(s=>dayKey(s.start)));
+  const wk=[...'一二三四五六日'].map((n,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return{n,hit:days.has(dayKey(d)),today:dayKey(d)===dayKey(now)}});
+  const weekOf=t=>{const d=new Date(t);const m=new Date(d.getFullYear(),d.getMonth(),d.getDate()-((d.getDay()+6)%7));return Math.round(m.getTime()/864e5/7)};
+  const weeks=new Set(S.sessions.map(s=>weekOf(s.start)));let cur=weekOf(now),streak=0;
+  if(!weeks.has(cur))cur--;while(weeks.has(cur)){streak++;cur--}
+  return{wk,streak,count:wk.filter(d=>d.hit).length};
+}
+
+/* ---------- 页面 ---------- */
+function route(){const r=location.hash.slice(1);return['train','moves','history','settings'].includes(r)?r:'train'}
+function render(){
+  const r=route();
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+r));
+  $('#app').innerHTML=({train:vTrain,moves:vMoves,history:vHistory,settings:vSettings})[r]();
+  renderWk();renderSheet();
+}
+function resumeBar(){return S.active&&!ui.wk?`<button class="resume" data-act="w-resume"><span class="grow">训练进行中：${h(S.active.name)}</span><span>继续</span></button>`:''}
+function vTrain(){
+  const w=weekInfo();
+  return `<div class="head"><h1>跑力打卡</h1><span class="mute small">${new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'short'})}</span></div>
+  ${resumeBar()}
+  <section class="card">
+    <div class="stats"><div><b>${w.count}</b><span class="mute small">本周训练天数</span></div><div><b>${w.streak}</b><span class="mute small">连续训练周数</span></div><div><b>${S.sessions.length}</b><span class="mute small">累计次数</span></div></div>
+    <div class="week">${w.wk.map(d=>`<div class="day${d.hit?' hit':''}${d.today?' today':''}"><i></i>${d.n}</div>`).join('')}</div>
+  </section>
+  <h3>训练模版</h3>
+  ${S.templates.map(t=>`<section class="card"><div class="row"><div class="grow"><b style="font-size:19px">${h(t.name)}</b><div class="mute small">${t.items.length} 个动作，共 ${t.items.reduce((a,i)=>a+i.sets,0)} 组</div></div><button class="btn sm" data-act="open-tpl" data-id="${t.id}">查看</button><button class="btn sm go" data-act="start" data-id="${t.id}">开始</button></div></section>`).join('')}
+  <button class="btn ghost wide" data-act="tpl-new">新建模版</button>`;
+}
+function vMoves(){
+  return `<div class="head"><h1>动作库</h1><button class="btn sm go" data-act="ex-new">添加动作</button></div>
+  <div class="grid">${S.exercises.map(e=>`<button class="tile" data-act="open-ex" data-id="${e.id}">${fig(e)}<b>${h(e.name)}</b><span class="mute small">目标 ${e.target} ${h(e.unit)}</span></button>`).join('')}</div>`;
+}
+function stPill(s){const st=s.strava||{};return st.state==='done'?'<span class="pill ok">已同步 Strava</span>':st.state==='pending'?'<span class="pill wait">等待手表记录</span>':st.state==='error'?'<span class="pill bad">同步失败</span>':'<span class="pill">未同步</span>'}
+function vHistory(){
+  if(!S.sessions.length)return `<div class="head"><h1>训练历史</h1></div><section class="card"><p>还没有记录。完成第一次训练后，这里会显示每次的动作和时长。</p><a class="btn go" href="#train">去训练</a></section>`;
+  return `<div class="head"><h1>训练历史</h1></div><section class="card" style="gap:0">${S.sessions.map(s=>{const d=new Date(s.start),hr=s.strava&&s.strava.hr;
+    return `<button class="hrow" data-act="open-session" data-id="${s.id}"><span class="date">${d.getMonth()+1}/${d.getDate()}</span><span class="grow"><b>${h(s.name)}</b><br><span class="mute small">${dur((s.end-s.start)/1000)}，${s.items.reduce((a,i)=>a+i.sets.filter(x=>x.done).length,0)} 组${hr?'，平均心率 '+Math.round(hr):''}</span></span>${stPill(s)}</button>`}).join('')}</section>`;
+}
+function vSettings(){
+  const c=S.settings.strava,preview=/claude/.test(location.host),ok=!!c.tok;
+  return `<div class="head"><h1>设置</h1></div>
+  <section class="card"><h3>组间休息</h3><div class="row"><span class="grow">每组完成后自动倒计时</span><div class="step"><button data-act="rest" data-d="-15" aria-label="减少">−</button><span style="min-width:48px">${S.settings.rest} 秒</span><button data-act="rest" data-d="15" aria-label="增加">+</button></div></div></section>
+  <section class="card"><div class="row"><h3 class="grow">STRAVA</h3>${ok?`<span class="pill ok">已连接${c.athlete?' '+h(c.athlete):''}</span>`:'<span class="pill">未连接</span>'}</div>
+    ${preview?'<p class="note">这个预览页面会拦截发往 Strava 的请求。把 App 部署到你自己的网址后，连接和上传才能生效。</p>':''}
+    ${ui.msg?`<p class="note">${h(ui.msg)}</p>`:''}
+    <ol class="steps"><li>在 strava.com/settings/api 创建一个应用，Authorization Callback Domain 填 <code>${h(location.host||'你的网址域名')}</code></li><li>把页面上的 Client ID 和 Client Secret 填到下面</li><li>点“连接 Strava”并授权</li></ol>
+    <div class="two"><label class="f" for="st-id">Client ID<input id="st-id" type="text" inputmode="numeric" data-f="st-id" value="${h(c.clientId)}"></label><label class="f" for="st-sec">Client Secret<input id="st-sec" type="password" data-f="st-sec" value="${h(c.clientSecret)}"></label></div>
+    <div class="row">${c.clientId&&c.clientSecret?`<a class="btn go grow" href="${h(authUrl())}">${ok?'重新授权':'连接 Strava'}</a>`:'<span class="mute small grow">填好两项后出现连接按钮</span>'}${ok?'<button class="btn" data-act="st-off">断开</button>':''}</div>
+    <label class="f" for="st-paste">授权后没有自动回到 App？把跳转后的完整网址粘贴到这里<input id="st-paste" type="text" placeholder="https://…?code=…"></label><button class="btn sm" data-act="st-paste">用这个网址完成连接</button>
+    <p class="small mute">连接后，每次结束训练会自动在 Strava 新建一条力量训练，写入动作和组数。</p>
+  </section>
+  <section class="card"><h3>备份</h3><p class="small mute">数据只保存在这台手机的这个 App 里。换手机或清除网站数据前，先复制一份备份。</p><div class="row"><button class="btn grow" data-act="backup">备份与恢复</button></div></section>`;
+}
+
+/* ---------- 弹层 ---------- */
+function renderSheet(){
+  const el=$('#sheet'),s=ui.sheet;el.classList.toggle('on',!!s);if(!s){el.innerHTML='';return}
+  el.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'+({tpl:shTpl,ex:shEx,exEdit:shExEdit,pick:shPick,session:shSession,backup:shBackup})[s.t](s)+'</div>';
+}
+const shHead=(t,extra)=>`<header>${extra||''}<h2>${t}</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>`;
+function shTpl(s){
+  const t=S.templates.find(x=>x.id===s.id);if(!t)return shHead('模版不存在');
+  if(s.edit)return shHead('编辑模版')+`<div class="body"><label class="f" for="tpl-name">模版名称<input id="tpl-name" type="text" data-f="tpl-name" value="${h(t.name)}"></label>
+    <div>${t.items.map((it,i)=>{const e=exById(it.exId);return `<div class="erow"><span class="grow">${h(e?e.name:'已删除的动作')}</span><div class="step"><button data-act="tpl-sets" data-i="${i}" data-d="-1" aria-label="减一组">−</button><span>${it.sets}</span><button data-act="tpl-sets" data-i="${i}" data-d="1" aria-label="加一组">+</button></div><button class="btn sm" data-act="tpl-up" data-i="${i}" ${i?'':'disabled'} aria-label="上移">↑</button><button class="btn sm" data-act="tpl-rm" data-i="${i}" aria-label="移除">✕</button></div>`}).join('')}</div>
+    <button class="btn ghost" data-act="tpl-add">添加动作</button><button class="btn ghost" data-act="tpl-del" data-confirm="再点一次，删除这个模版">删除模版</button></div><footer><button class="btn go" data-act="tpl-edit">完成</button></footer>`;
+  return shHead(h(t.name))+`<div class="body"><div class="grid">${t.items.map((it,i)=>{const e=exById(it.exId);return e?`<button class="tile" data-act="open-ex" data-id="${e.id}" data-back="${t.id}"><span class="no">${i+1}</span>${fig(e)}<b>${h(e.name)}</b><span class="mute small">${it.sets} 组 × ${e.target} ${h(e.unit)}</span></button>`:''}).join('')}</div></div>
+  <footer><button class="btn" data-act="tpl-edit">编辑模版</button><button class="btn go" data-act="start" data-id="${t.id}">开始训练</button></footer>`;
+}
+function shEx(s){
+  const e=exById(s.id);if(!e)return shHead('动作不存在');
+  return shHead(h(e.name),s.back?`<button class="btn sm" data-act="open-tpl" data-id="${s.back}">返回</button>`:'')+`<div class="body">${fig(e,'figbig')}
+    <p class="mute small" style="text-align:center">每组目标 ${e.target} ${h(e.unit)}${DG[e.dg]&&!e.img?'，红色是主要发力部位':''}</p>
+    <h3>姿势要点</h3>${e.cues&&e.cues.length?`<ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol>`:'<p class="mute">还没有填写要点。</p>'}
+    ${e.bad&&e.bad.length?`<h3>常见错误</h3><ul class="cues bad">${e.bad.map(c=>`<li>${h(c)}</li>`).join('')}</ul>`:''}</div>
+    <footer><button class="btn" data-act="ex-edit" data-id="${e.id}">编辑</button><button class="btn go" data-act="close">知道了</button></footer>`;
+}
+function shExEdit(s){
+  const e=s.id?exById(s.id):{name:'',type:'reps',unit:'次',target:12,cues:[],bad:[]};
+  const units=['次','次/侧','步','步/向','秒','秒/侧'];
+  return shHead(s.id?'编辑动作':'添加动作')+`<div class="body">
+    <label class="f" for="e-name">名称<input id="e-name" type="text" value="${h(e.name)}" placeholder="例如：臀桥"></label>
+    <div class="two"><label class="f" for="e-unit">计量单位<select id="e-unit">${units.map(u=>`<option ${u===e.unit?'selected':''}>${u}</option>`).join('')}</select></label><label class="f" for="e-target">每组目标<input id="e-target" type="number" inputmode="numeric" value="${e.target}"></label></div>
+    <label class="row" for="e-w"><input id="e-w" type="checkbox" ${e.weighted?'checked':''}><span>这个动作要记录负重（kg）</span></label>
+    <label class="f" for="e-cues">姿势要点，每行一条<textarea id="e-cues">${h((e.cues||[]).join('\n'))}</textarea></label>
+    <label class="f" for="e-bad">常见错误，每行一条<textarea id="e-bad">${h((e.bad||[]).join('\n'))}</textarea></label>
+    <label class="f" for="e-img">示意图片（可选，用你自己的照片替换简笔图）<input id="e-img" type="file" accept="image/*"></label>
+    ${e.img?'<button class="btn sm ghost" data-act="ex-noimg" data-id="'+s.id+'">移除当前图片</button>':''}
+    ${s.id?'<button class="btn ghost" data-act="ex-del" data-id="'+s.id+'" data-confirm="再点一次，删除这个动作">删除动作</button>':''}
+    </div><footer><button class="btn" data-act="close">取消</button><button class="btn go" data-act="ex-save" data-id="${s.id||''}">保存</button></footer>`;
+}
+function shPick(s){return shHead('选择要添加的动作')+`<div class="body"><div>${S.exercises.map(e=>`<div class="erow"><span class="grow">${h(e.name)}</span><button class="btn sm" data-act="pick" data-id="${e.id}">添加</button></div>`).join('')}</div></div><footer><button class="btn go" data-act="open-tpl" data-id="${s.id}" data-edit="1">完成</button></footer>`}
+function shSession(s){
+  const x=S.sessions.find(a=>a.id===s.id);if(!x)return shHead('记录不存在');
+  const st=x.strava||{},d=new Date(x.start),conn=!!S.settings.strava.tok;
+  return shHead(h(x.name))+`<div class="body">
+    <p class="mute small">${d.toLocaleString('zh-CN',{month:'long',day:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'})}，用时 ${dur((x.end-x.start)/1000)}</p>
+    ${st.hr?`<div class="stats"><div><b>${Math.round(st.hr)}</b><span class="mute small">平均心率</span></div><div><b>${st.maxHr?Math.round(st.maxHr):'—'}</b><span class="mute small">最高心率</span></div><div></div></div>`:''}
+    <pre class="log">${h(logText(x))||'没有完成的组'}</pre>
+    <div class="row">${stPill(x)}<span class="mute small grow">${h(st.msg||'')}</span></div>
+    ${st.state==='done'&&st.id?`<a class="btn" href="https://www.strava.com/activities/${st.id}">在 Strava 查看</a>`:''}
+    ${conn&&st.state!=='done'?`<div class="row"><button class="btn grow" data-act="s-sync" data-id="${x.id}">重新同步</button></div>`:''}
+    ${!conn?'<p class="mute small">在“设置”里连接 Strava 后，训练结束会自动上传。</p>':''}
+    <button class="btn ghost" data-act="s-del" data-id="${x.id}" data-confirm="再点一次，删除这条记录">删除记录</button></div>`;
+}
+function shBackup(){return shHead('备份与恢复')+`<div class="body"><label class="f" for="bk">全部数据（不含 Strava 密钥）。复制后存到备忘录；恢复时把内容粘贴回来。<textarea id="bk" style="min-height:180px">${h(JSON.stringify({...S,active:null,settings:{...S.settings,strava:{...S.settings.strava,clientSecret:'',tok:null}}}))}</textarea></label><p class="small mute" id="bk-msg"></p></div><footer><button class="btn" data-act="bk-copy">复制</button><button class="btn" data-act="bk-load" data-confirm="再点一次，用文本框内容覆盖现有数据">恢复</button></footer>`}
+
+/* ---------- 训练中 ---------- */
+function renderWk(){
+  const el=$('#wk'),a=S.active;el.classList.toggle('on',!!(a&&ui.wk));if(!a||!ui.wk){el.innerHTML='';return}
+  let curFound=false;
+  el.innerHTML=`<div class="wk"><header><div class="grow"><b>${h(a.name)}</b><div class="mute small" id="prog"></div></div><span class="clock num" id="clock">00:00</span><button class="btn sm" data-act="w-min">收起</button></header>
+  <div class="list">${a.items.map((it,i)=>{const e=exById(it.exId),fin=it.sets.every(x=>x.done);let cls=fin?'fin':'';if(!fin&&!curFound){cls='cur';curFound=true}
+    return `<section class="xc ${cls}"><div class="row">${fig(e||{})}<div class="grow"><b>${h(it.name)}</b><div class="mute small">目标 ${it.target} ${h(it.unit)}</div></div><button class="btn sm" data-act="open-ex" data-id="${it.exId}">要点</button></div>
+    ${it.sets.map((st,j)=>`<div class="set${st.done?' done':''}"><span class="n">${j+1}</span><div class="in"><input id="v-${i}-${j}" type="number" inputmode="decimal" data-f="set" data-i="${i}" data-j="${j}" value="${st.val}" aria-label="第${j+1}组数量"><span class="mute small">${h(it.unit)}</span>${it.weighted?`<input id="w-${i}-${j}" type="number" inputmode="decimal" data-f="setw" data-i="${i}" data-j="${j}" value="${st.w||''}" placeholder="kg" aria-label="第${j+1}组负重">`:''}</div>${it.type==='time'&&!st.done?`<button class="hold" data-act="hold" data-i="${i}" data-j="${j}">计时</button>`:'<span></span>'}<button class="chk" data-act="chk" data-i="${i}" data-j="${j}" aria-label="${st.done?'取消完成':'完成这一组'}">✓</button></div>`).join('')}
+    <button class="btn sm ghost" data-act="addset" data-i="${i}">加一组</button></section>`}).join('')}</div>
+  <div id="tbar"><span class="t num" id="tt"></span><span class="grow small" id="tl"></span><button class="btn sm" data-act="t-add">+15 秒</button><button class="btn sm" data-act="t-skip">跳过</button></div>
+  <footer><button class="btn" data-act="w-drop" data-confirm="再点一次，放弃本次训练">放弃</button><button class="btn ok" data-act="w-finish" data-confirm="再点一次，结束并保存">结束训练</button></footer></div>`;
+  paintTick();
+}
+function paintTick(){
+  const a=S.active;if(!a||!ui.wk)return;
+  const c=$('#clock');if(c)c.textContent=mmss((Date.now()-a.start)/1000);
+  const p=$('#prog');if(p){const all=a.items.reduce((n,i)=>n+i.sets.length,0),dn=a.items.reduce((n,i)=>n+i.sets.filter(x=>x.done).length,0);p.textContent='已完成 '+dn+' / '+all+' 组'}
+  const bar=$('#tbar');if(!bar)return;
+  if(!T){bar.classList.remove('on');return}
+  const left=(T.end-Date.now())/1000;
+  if(left<=0){const t=T;T=null;beep();bar.classList.remove('on');
+    if(t.kind==='hold'){const st=a.items[t.i]&&a.items[t.i].sets[t.j];if(st&&!st.done){st.done=true;save();startRest();renderWk()}}
+    return}
+  bar.classList.add('on');$('#tt').textContent=mmss(left);$('#tl').textContent=T.label;
+}
+function startRest(){const r=S.settings.rest;T=r>0?{kind:'rest',end:Date.now()+r*1000,label:'组间休息'}:null}
+let AC,wake;
+function prime(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}}
+function beep(){try{[0,.25].forEach(d=>{const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value=880;const t=AC.currentTime+d;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2)})}catch(e){}}
+async function keepAwake(){try{if(navigator.wakeLock&&S.active)wake=await navigator.wakeLock.request('screen')}catch(e){}}
+function startWorkout(tplId){
+  const t=S.templates.find(x=>x.id===tplId);if(!t)return;
+  if(S.active){ui.wk=true;ui.sheet=null;return render()}
+  S.active={id:uid(),tplId,name:t.name,start:Date.now(),items:t.items.map(it=>{const e=exById(it.exId);return e?{exId:e.id,name:e.name,type:e.type,unit:e.unit,target:e.target,weighted:!!e.weighted,sets:Array.from({length:it.sets},()=>({val:e.target,w:'',done:false}))}:null}).filter(Boolean)};
+  save();ui.wk=true;ui.sheet=null;T=null;keepAwake();render();
+}
+function finishWorkout(){
+  const a=S.active;if(!a)return;
+  const s={id:a.id,name:a.name,start:a.start,end:Date.now(),items:a.items,strava:{state:'none'}};
+  S.sessions.unshift(s);S.active=null;T=null;ui.wk=false;save();
+  try{wake&&wake.release()}catch(e){}
+  ui.sheet={t:'session',id:s.id};if(route()!=='history'){ui.keep=true;location.hash='history'}render();
+  if(S.settings.strava.tok)syncSession(s);
+}
+
+/* ---------- Strava ---------- */
+const ST='https://www.strava.com';
+const redirectUri=()=>location.origin+location.pathname;
+function authUrl(){return ST+'/oauth/authorize?client_id='+encodeURIComponent(S.settings.strava.clientId)+'&redirect_uri='+encodeURIComponent(redirectUri())+'&response_type=code&approval_prompt=auto&scope=activity:write,activity:read_all'}
+async function tokenReq(p){
+  const c=S.settings.strava;let r;
+  try{r=await fetch(ST+'/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:c.clientId,client_secret:c.clientSecret,...p})})}
+  catch(e){throw new Error('连不上 Strava，请检查网络')}
+  if(!r.ok)throw new Error('Strava 拒绝了授权（'+r.status+'），请核对 Client ID 和 Secret');
+  const j=await r.json();c.tok={a:j.access_token,r:j.refresh_token,e:j.expires_at};if(j.athlete)c.athlete=j.athlete.firstname||'';save();
+}
+async function api(path,opt){
+  const c=S.settings.strava;if(!c.tok)throw new Error('尚未连接 Strava');
+  if(c.tok.e<Date.now()/1000+120)await tokenReq({grant_type:'refresh_token',refresh_token:c.tok.r});
+  opt=opt||{};let r;
+  try{r=await fetch(ST+'/api/v3'+path,{method:opt.method||'GET',body:opt.body,headers:{Authorization:'Bearer '+c.tok.a,...(opt.type?{'Content-Type':opt.type}:{})}})}
+  catch(e){throw new Error('连不上 Strava，请检查网络')}
+  if(r.status===401)throw new Error('Strava 授权已失效，请在设置里重新授权');
+  if(r.status===429)throw new Error('Strava 请求太频繁，稍后再试');
+  if(!r.ok)throw new Error('Strava 返回错误 '+r.status);
+  return r.json();
+}
+async function finishAuth(code){
+  try{await tokenReq({code,grant_type:'authorization_code'});ui.msg='已连接 Strava。'}catch(e){ui.msg=e.message}
+  render();retryPending();
+}
+const localIso=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+'Z'};
+function pickOverlap(list,s){ // 选出与本次训练时间重叠最多的 Strava 活动
+  let best=null,bo=0;
+  for(const a of list||[]){const st=Date.parse(a.start_date),en=st+(a.elapsed_time||0)*1000;const o=Math.min(en,s.end)-Math.max(st,s.start);if(o>bo){bo=o;best=a}}
+  return best;
+}
+async function syncSession(s,forceCreate){
+  const mode='create',done=()=>{save();render()};
+  s.strava={state:'pending',msg:'正在同步…'};render();
+  try{
+    const desc=logText(s);
+    if(mode==='create'){
+      const j=await api('/activities',{method:'POST',type:'application/x-www-form-urlencoded',body:new URLSearchParams({name:s.name,sport_type:'WeightTraining',start_date_local:localIso(s.start),elapsed_time:Math.max(1,Math.round((s.end-s.start)/1000)),description:desc})});
+      s.strava={state:'done',id:j.id,msg:'已新建活动'};return done();
+    }
+    const list=await api('/athlete/activities?per_page=20&after='+Math.floor(s.start/1000-2700)+'&before='+Math.ceil(s.end/1000+2700));
+    const hit=pickOverlap(list,s);
+    if(!hit){s.strava={state:'pending',msg:'Strava 上还没有这个时间段的手表记录，打开 App 时会自动重试'};return done()}
+    const d=await api('/activities/'+hit.id);
+    const body={name:s.name,description:d.description&&d.description.indexOf(desc)<0?d.description+'\n\n'+desc:desc};
+    await api('/activities/'+hit.id,{method:'PUT',type:'application/json',body:JSON.stringify(body)});
+    s.strava={state:'done',id:hit.id,hr:d.average_heartrate||null,maxHr:d.max_heartrate||null,msg:d.average_heartrate?'已写入手表记录':'已写入，但这条活动没有心率数据'};done();
+  }catch(e){s.strava={state:'error',msg:e.message};done()}
+}
+function retryPending(){
+  if(!S.settings.strava.tok)return;
+  S.sessions.filter(s=>s.strava&&s.strava.state==='pending'&&Date.now()-s.end<3*864e5).slice(0,3).forEach(s=>syncSession(s));
+}
+
+/* ---------- 事件 ---------- */
+function armed(b){ // 危险操作要点两次
+  if(!b.dataset.confirm||b.dataset.armed)return true;
+  b.dataset.armed='1';b.dataset.label=b.textContent;b.textContent=b.dataset.confirm;
+  setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent=b.dataset.label}},3000);return false;
+}
+function curTpl(){return ui.sheet&&S.templates.find(t=>t.id===ui.sheet.id)}
+const A={
+  close(){ui.sheet=null},
+  'open-tpl'(b){ui.sheet={t:'tpl',id:b.dataset.id,edit:!!b.dataset.edit}},
+  'tpl-edit'(){ui.sheet.edit=!ui.sheet.edit;save()},
+  'tpl-new'(){const t={id:uid(),name:'新模版',items:[]};S.templates.push(t);save();ui.sheet={t:'tpl',id:t.id,edit:true}},
+  'tpl-del'(){S.templates=S.templates.filter(t=>t.id!==ui.sheet.id);save();ui.sheet=null},
+  'tpl-sets'(b){const it=curTpl().items[+b.dataset.i];it.sets=Math.min(12,Math.max(1,it.sets+ +b.dataset.d));save()},
+  'tpl-up'(b){const a=curTpl().items,i=+b.dataset.i;if(i>0){[a[i-1],a[i]]=[a[i],a[i-1]];save()}},
+  'tpl-rm'(b){curTpl().items.splice(+b.dataset.i,1);save()},
+  'tpl-add'(){ui.sheet={t:'pick',id:ui.sheet.id}},
+  pick(b){curTpl().items.push({exId:b.dataset.id,sets:3});save();b.textContent='已添加';return false},
+  start(b){prime();startWorkout(b.dataset.id);return false},
+  'open-ex'(b){ui.sheet={t:'ex',id:b.dataset.id,back:b.dataset.back}},
+  'ex-new'(){ui.sheet={t:'exEdit',id:null}},
+  'ex-edit'(b){ui.sheet={t:'exEdit',id:b.dataset.id}},
+  'ex-noimg'(b){delete exById(b.dataset.id).img;save()},
+  'ex-del'(b){const id=b.dataset.id;S.exercises=S.exercises.filter(e=>e.id!==id);S.templates.forEach(t=>t.items=t.items.filter(i=>i.exId!==id));save();ui.sheet=null},
+  'ex-save'(b){saveEx(b.dataset.id);return false},
+  'w-min'(){ui.wk=false},
+  'w-resume'(){prime();ui.wk=true;keepAwake()},
+  chk(b){prime();const st=S.active.items[+b.dataset.i].sets[+b.dataset.j];st.done=!st.done;if(st.done)startRest();else if(T&&T.kind==='rest')T=null;save()},
+  hold(b){prime();const i=+b.dataset.i,j=+b.dataset.j,it=S.active.items[i],sec=+it.sets[j].val||it.target;T={kind:'hold',i,j,end:Date.now()+sec*1000,label:it.name+' 第 '+(j+1)+' 组，坚持住'};paintTick();return false},
+  addset(b){const it=S.active.items[+b.dataset.i];it.sets.push({val:it.target,w:'',done:false});save()},
+  't-add'(){if(T)T.end+=15000;paintTick();return false},
+  't-skip'(){T=null;paintTick();return false},
+  'w-drop'(){S.active=null;T=null;ui.wk=false;save()},
+  'w-finish'(){finishWorkout();return false},
+  'open-session'(b){ui.sheet={t:'session',id:b.dataset.id}},
+  's-del'(b){S.sessions=S.sessions.filter(s=>s.id!==b.dataset.id);save();ui.sheet=null},
+  's-sync'(b){syncSession(S.sessions.find(s=>s.id===b.dataset.id));return false},
+  's-create'(b){syncSession(S.sessions.find(s=>s.id===b.dataset.id),true);return false},
+  rest(b){S.settings.rest=Math.min(300,Math.max(0,S.settings.rest+ +b.dataset.d));save()},
+  'st-off'(){const c=S.settings.strava;c.tok=null;c.athlete='';ui.msg='已断开 Strava。';save()},
+  'st-paste'(){const v=$('#st-paste').value.trim(),m=v.match(/[?&]code=([^&\s]+)/);const code=m?m[1]:(/^[0-9a-f]{20,}$/i.test(v)?v:'');if(!code){ui.msg='没有在这段文字里找到授权码，请粘贴跳转后的完整网址。';return}finishAuth(code);return false},
+  backup(){ui.sheet={t:'backup'}},
+  'bk-copy'(){const t=$('#bk');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>$('#bk-msg').textContent='已复制。',()=>$('#bk-msg').textContent='自动复制失败，请长按文本框手动全选复制。');return false},
+  'bk-load'(){try{const d=JSON.parse($('#bk').value);if(!d.exercises||!d.templates||!d.sessions)throw 0;const keep=S.settings.strava;S={...seed(),...d,active:null};S.settings.strava={...S.settings.strava,clientId:keep.clientId,clientSecret:keep.clientSecret,tok:keep.tok,athlete:keep.athlete};save();ui.sheet=null}catch(e){$('#bk-msg').textContent='内容不是有效的备份，没有做任何更改。';return false}}
+};
+function saveEx(id){
+  const name=$('#e-name').value.trim();if(!name){$('#e-name').focus();return}
+  const unit=$('#e-unit').value,lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean);
+  const data={name,unit,type:unit.indexOf('秒')===0?'time':'reps',target:Math.max(1,+$('#e-target').value||1),weighted:$('#e-w').checked,cues:lines($('#e-cues').value),bad:lines($('#e-bad').value)};
+  let e=id&&exById(id);if(e)Object.assign(e,data);else{e={id:uid(),...data};S.exercises.push(e)}
+  const f=$('#e-img').files[0],fin=()=>{if(!save()){delete e.img;save()}ui.sheet={t:'ex',id:e.id};render()};
+  if(!f)return fin();
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=()=>{const k=Math.min(1,480/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);e.img=c.toDataURL('image/jpeg',.72);URL.revokeObjectURL(url);fin()};
+  img.onerror=fin;img.src=url;
+}
+document.addEventListener('click',ev=>{
+  if(ev.target.id==='sheet'){ui.sheet=null;return render()}
+  const b=ev.target.closest('[data-act]');if(!b||b.disabled)return;
+  if(!armed(b))return;
+  if(A[b.dataset.act](b)!==false)render();
+});
+document.addEventListener('input',ev=>{
+  const el=ev.target,f=el.dataset.f;if(!f)return;const c=S.settings.strava;
+  if(f==='set'||f==='setw'){const st=S.active&&S.active.items[+el.dataset.i].sets[+el.dataset.j];if(st)st[f==='set'?'val':'w']=el.value}
+  else if(f==='tpl-name'){const t=curTpl();if(t)t.name=el.value||'未命名模版'}
+  else if(f==='st-id')c.clientId=el.value.trim();
+  else if(f==='st-sec')c.clientSecret=el.value.trim();
+  save();
+});
+document.addEventListener('change',ev=>{const el=ev.target;if(el.dataset.f==='mode'){S.settings.strava.mode=el.value;save()}else if(el.dataset.f==='st-id'||el.dataset.f==='st-sec')render()});
+window.addEventListener('hashchange',()=>{if(ui.keep)ui.keep=false;else ui.sheet=null;render()});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){keepAwake();retryPending();paintTick()}});
+
+/* ---------- 启动 ---------- */
+tick=setInterval(paintTick,250);
+if(S.active)ui.wk=false;
+render();
+(function(){
+  let q;try{q=new URLSearchParams(location.search)}catch(e){return}
+  const code=q.get('code'),err=q.get('error');
+  if(code||err){try{history.replaceState(null,'',location.pathname+'#settings')}catch(e){}
+    if(code)finishAuth(code);else{ui.msg='你在 Strava 取消了授权。';render()}}
+  else retryPending();
+})();
+if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
+</script>
+</body>
+</html>

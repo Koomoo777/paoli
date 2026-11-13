@@ -202,6 +202,10 @@ body{-webkit-touch-callout:none}
 .restbox .trk{stroke:var(--panel2)}
 .restnum{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
 .restnum .big{font-size:58px}
+.restbox.prep .big{font-size:96px}
+.restbox.prep circle.arc{stroke:var(--hot)}
+.restnum .unit{font-size:15px}
+.pager span{max-width:46vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .next{text-align:center;color:var(--mute)} .next b{color:var(--ink);font-weight:600}
 .recall{font-size:20px;font-weight:700;padding:10px 4px 0}
 .rest{display:none;align-items:center;gap:10px}
@@ -397,15 +401,13 @@ function vSettings(){
     ${ok?'<button class="btn ghost" data-act="st-off" data-confirm="再点一次，断开 Strava">断开连接</button>':''}
   </section>`:''}
   <p class="foot">训练结束后，App 会在 Strava 上找到 Apple Watch 记录的那条活动，写入动作明细并取回心率。手表记录还没同步时显示“等待手表记录”，下次打开自动重试。</p>
-  <h3>数据</h3>
-  <section class="card list"><button class="lrow" data-act="backup"><span class="grow">备份与恢复</span></button></section>
-  <p class="foot">训练记录只保存在这台手机上。版本 13</p>`;
+  <p class="foot">训练记录只保存在这台手机上。版本 14</p>`;
 }
 
 /* ---------- 弹层 ---------- */
 function renderSheet(){
   const el=$('#sheet'),s=ui.sheet;el.classList.toggle('on',!!s);if(!s){el.innerHTML='';return}
-  el.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'+({tpl:shTpl,ex:shEx,exEdit:shExEdit,pick:shPick,session:shSession,backup:shBackup,drop:shDrop})[s.t](s)+'</div>';
+  el.innerHTML='<div class="sheet" role="dialog" aria-modal="true">'+({tpl:shTpl,ex:shEx,exEdit:shExEdit,pick:shPick,session:shSession,drop:shDrop})[s.t](s)+'</div>';
 }
 const shHead=(t,extra)=>`<header>${extra||''}<h2>${t}</h2><button class="x" data-act="close" aria-label="关闭">✕</button></header>`;
 function shTpl(s){
@@ -454,7 +456,7 @@ function shSession(s){
     <button class="btn ghost" data-act="s-del" data-id="${x.id}" data-confirm="再点一次，删除这条记录">删除记录</button></div>`;
 }
 function shDrop(){return shHead('确定放弃吗？')+`<div class="body"><p class="mute">这次训练不会保存，也不会上传到 Strava。</p></div><footer><button class="btn" data-act="close">取消</button><button class="btn stop holdbtn" data-hold="w-drop" data-ms="900">长按确定放弃</button></footer>`}
-function shBackup(){return shHead('备份与恢复')+`<div class="body"><label class="f" for="bk">全部训练数据和 Strava 连接信息。复制后存到备忘录，不要发给别人；恢复时把内容粘贴回来。<textarea id="bk" style="min-height:180px">${h(JSON.stringify({...S,active:null}))}</textarea></label><p class="small mute" id="bk-msg"></p></div><footer><button class="btn" data-act="bk-copy">复制</button><button class="btn" data-act="bk-load" data-confirm="再点一次，用文本框内容覆盖现有数据">恢复</button></footer>`}
+
 
 /* ---------- 训练中 ---------- */
 function curItem(){const a=S.active;if(a.cur==null||!a.items[a.cur])a.cur=0;return a.items[a.cur]}
@@ -476,9 +478,22 @@ function renderRest(el,a){ // 做完一组后的整屏休息：大倒计时，�
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':'<button class="btn go lg wide" data-act="t-skip">跳过休息</button>'}</footer></div>`;
   paintTick();
 }
+function renderHold(el,a){ // 计时动作的整屏计时：先 5 秒准备，再正计时；下面是怎么做和一句话
+  const it=a.items[T.i],e=exById(it.exId)||{},C=2*Math.PI*112,prep=(a.pAt||Date.now())<T.start;
+  el.innerHTML=`<div class="wk"><header class="bar"><button data-act="w-min" aria-label="收起"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><div class="pager"><span>${h(it.name)}</span></div>
+    <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="确认结束">结束</button></div></header>
+  <div class="list">
+    <div class="restbox${prep?' prep':''}"><svg viewBox="0 0 260 260" aria-hidden="true"><circle class="trk" cx="130" cy="130" r="112"/><circle class="arc" id="rarc" cx="130" cy="130" r="112" transform="rotate(-90 130 130)" stroke-dasharray="0 ${C}"/></svg>
+      <div class="restnum"><span class="big num" id="tt"></span><span class="unit">${prep?'准备':'第 '+(T.j+1)+' 组 · 目标 '+it.target+' 秒'}</span></div></div>
+    ${teachDo(e)}
+  </div>
+  <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':prep?'<button class="btn lg wide" data-act="t-stop">取消</button>':'<button class="btn stop lg wide" data-act="t-stop">停止并完成</button>'}</footer></div>`;
+  paintTick();
+}
 function renderWk(){
   const el=$('#wk'),a=S.active;el.classList.toggle('on',!!(a&&ui.wk));if(!a||!ui.wk){el.innerHTML='';return}
   if(T&&T.kind==='rest'&&!allDone())return renderRest(el,a);
+  if(T&&T.kind==='hold'&&T.i===a.cur)return renderHold(el,a);
   const it=curItem(),i=a.cur,n=a.items.length,j=it.sets.findIndex(x=>!x.done),e=exById(it.exId)||{};
   const tot=a.items.reduce((m,x)=>m+x.sets.length,0),dn=a.items.reduce((m,x)=>m+x.sets.filter(y=>y.done).length,0);
   const timing=T&&T.kind==='hold'&&T.i===i,fin=allDone();
@@ -511,7 +526,15 @@ const elapsed=a=>((a.pAt||Date.now())-a.start-(a.pz||0))/1000;
 function paintTick(){
   const a=S.active;if(!a||!ui.wk)return;
   const now=a.pAt||Date.now(),c=$('#clock');if(c)c.textContent=mmss(elapsed(a));
-  if(T&&T.kind==='hold'){const b=$('#big');if(b&&T.i===a.cur)b.textContent=mmss((now-T.start)/1000)}
+  if(T&&T.kind==='hold'){
+    const sec=(now-T.start)/1000,t=$('#tt'),r=$('#rarc'),C=2*Math.PI*112,tg=(a.items[T.i]&&a.items[T.i].target)||1;
+    if(sec<0){if(t)t.textContent=Math.ceil(-sec);if(r)r.setAttribute('stroke-dasharray',C*Math.min(1,-sec/5)+' '+C)}
+    else{
+      if(!T.go){T.go=true;beep();renderWk();return}
+      if(t)t.textContent=mmss(sec);if(r)r.setAttribute('stroke-dasharray',C*Math.min(1,sec/tg)+' '+C);
+      if(!T.hit&&sec>=tg){T.hit=true;beep()}
+    }
+  }
   if(T&&T.kind==='rest'){const left=(T.end-now)/1000;
     if(left<=0&&!a.pAt){T=null;beep();renderWk();return}
     const t=$('#tt');if(t)t.textContent=mmss(left);
@@ -621,8 +644,8 @@ const A={
   'w-resume'(){prime();ui.wk=true;keepAwake()},
   chk(b){prime();const it=S.active.items[+b.dataset.i],st=it.sets[+b.dataset.j];st.val=Math.max(0,+st.val||0)||it.target;st.done=true;advance();if(allDone())T=null;else startRest(+b.dataset.i);save()},
   bump(b){const it=curItem(),st=it.sets.find(x=>!x.done);if(st){st.val=Math.max(1,(+st.val||0)+ +b.dataset.d);save()}},
-  hold(b){prime();const i=+b.dataset.i,j=+b.dataset.j;T={kind:'hold',i,j,start:Date.now()}},
-  't-stop'(){if(!T||T.kind!=='hold')return false;const st=S.active.items[T.i].sets[T.j];st.val=Math.max(1,Math.round((Date.now()-T.start)/1000));st.done=true;const from=T.i;T=null;advance();if(!allDone())startRest(from);save()},
+  hold(b){prime();const i=+b.dataset.i,j=+b.dataset.j;T={kind:'hold',i,j,start:Date.now()+5000}},
+  't-stop'(){if(!T||T.kind!=='hold')return false;if(Date.now()<T.start){T=null;return}const st=S.active.items[T.i].sets[T.j];st.val=Math.max(1,Math.round((Date.now()-T.start)/1000));st.done=true;const from=T.i;T=null;advance();if(!allDone())startRest(from);save()},
   undo(){const it=curItem();for(let k=it.sets.length-1;k>=0;k--)if(it.sets[k].done){it.sets[k].done=false;break}save()},
   'w-go'(b){const a=S.active;a.cur=Math.min(a.items.length-1,Math.max(0,a.cur+ +b.dataset.d));if(T&&T.kind==='hold')T=null;save()},
   'w-nextopen'(){const a=S.active;const k=a.items.findIndex(it=>it.sets.some(x=>!x.done));if(k>=0)a.cur=k;save()},
@@ -641,10 +664,8 @@ const A={
   rest(b){S.settings.rest=Math.min(300,Math.max(0,S.settings.rest+ +b.dataset.d));save()},
   'st-off'(){const c=S.settings.strava;c.tok=null;c.athlete='';ui.msg='已断开 Strava。';save()},
   'st-paste'(){const v=$('#st-paste').value.trim(),m=v.match(/[?&]code=([^&\s]+)/);const code=m?m[1]:(/^[0-9a-f]{20,}$/i.test(v)?v:'');if(!code){ui.msg='没有在这段文字里找到授权码，请粘贴跳转后的完整网址。';return}finishAuth(code);return false},
-  backup(){ui.sheet={t:'backup'}},
   'st-toggle'(){ui.stOpen=!ui.stOpen},
-  'bk-copy'(){const t=$('#bk');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>$('#bk-msg').textContent='已复制。',()=>$('#bk-msg').textContent='自动复制失败，请长按文本框手动全选复制。');return false},
-  'bk-load'(){try{const d=JSON.parse($('#bk').value);if(!d.exercises||!d.templates||!d.sessions)throw 0;const keep=S.settings.strava;S={...seed(),...d,active:null};const bk=S.settings.strava||{};S.settings.strava={...keep,...bk,clientId:bk.clientId||keep.clientId,clientSecret:bk.clientSecret||keep.clientSecret,tok:bk.tok||keep.tok,athlete:bk.athlete||keep.athlete};save();ui.sheet=null}catch(e){$('#bk-msg').textContent='内容不是有效的备份，没有做任何更改。';return false}}
+
 };
 function saveEx(id){
   const name=$('#e-name').value.trim();if(!name){$('#e-name').focus();return}

@@ -161,7 +161,10 @@ const DG={
  bulgarian:{head:[56,17],b:['54,26 50,54','54,29 58,41 54,51','50,54 40,78 22,64'],h:['50,54 68,60 66,89 74,89'],p:['8,90 8,66 26,66 26,90']},
  crab:{head:[50,15],b:['40,26 60,26','50,26 50,50','43,50 57,50','40,26 34,38 42,46','60,26 66,38 58,46'],h:['43,50 34,68 30,89','57,50 66,68 70,89'],d:['35,72 65,72'],p:['78,58 92,58','89,55 92,58 89,61']},
  pushup:{head:[22,56],b:['30,62 60,73 88,84 90,89'],h:['30,62 30,89 22,89']},
- plank:{head:[20,64],b:['28,70 28,88 14,88','58,76 88,83 90,89'],h:['28,70 58,76']}
+ plank:{head:[20,64],b:['28,70 28,88 14,88','58,76 88,83 90,89'],h:['28,70 58,76']},
+ crunch:{head:[23,68],b:['55,86 72,66 86,88','32,76 31,62 25,65'],h:['55,86 32,76']},
+ legraise:{head:[14,83],b:['22,86 52,86','24,88 42,88'],h:['52,86 84,56'],p:['92,68 92,54','89,57 92,54 95,57']},
+ pullup:{head:[50,23],b:['41,34 59,34','50,34 50,62','44,62 56,62','45,62 45,82','55,62 55,82'],h:['34,14 28,30 41,34','66,14 72,30 59,34'],p:['20,14 80,14']}
 };
 const SEED_EX=[
  {id:'wallsit',name:'靠墙静蹲',type:'time',unit:'秒',target:45,dg:'wallsit',
@@ -182,15 +185,24 @@ const SEED_EX=[
  {id:'crab',name:'弹力带螃蟹行走',type:'reps',unit:'步/向',target:15,dg:'crab',
   cues:['弹力带套在膝上方或脚踝，保持微屈髋屈膝的半蹲','全程让弹力带保持张力，双脚不并拢','横向迈步由臀部外侧发力，脚尖朝前','上身稳定，不随步伐左右摇摆'],
   bad:['膝盖被弹力带拉向内','拖着后脚走，或靠上身晃动带动']},
- {id:'pushup',name:'俯卧撑',type:'reps',unit:'次',target:12,dg:'pushup',
+ {id:'pushup',name:'俯卧撑',type:'reps',unit:'次',target:15,dg:'pushup',
   cues:['双手略宽于肩，手腕在肩的正下方','从头到脚跟一条直线，收紧腹部和臀部','下放时手肘与躯干约成 45°，胸口接近地面','推起到手臂伸直，肩胛自然前伸'],
   bad:['塌腰或撅臀','手肘外展到 90°','只做半程']},
  {id:'plank',name:'平板支撑',type:'time',unit:'秒',target:45,dg:'plank',
   cues:['手肘在肩的正下方，前臂平行','收腹、夹臀，骨盆略后倾','头、背、臀、脚跟成一条直线','前臂向下推地，保持自然呼吸'],
-  bad:['塌腰，腰椎受压','臀部抬得过高','憋气、耸肩']}
+  bad:['塌腰，腰椎受压','臀部抬得过高','憋气、耸肩']},
+ {id:'crunch',name:'卷腹',type:'reps',unit:'次',target:30,dg:'crunch',
+  cues:['仰卧屈膝，双脚踩实，下背全程贴地','双手轻扶耳侧，手肘打开，不抱头发力','呼气，用腹部把肩胛骨卷离地面，胸口靠向骨盆','顶峰停一下，吸气慢慢放回，肩膀不完全落地'],
+  bad:['双手拉扯脖子，下巴顶住胸口','整个上身坐起来，变成髋部发力','借惯性快速弹起']},
+ {id:'legraise',name:'平躺抬腿',type:'reps',unit:'次',target:12,dg:'legraise',
+  cues:['仰卧，双手放身体两侧或垫在臀部下方','先收紧腹部，把下背压向地面','双腿并拢、膝盖微屈，抬到与地面接近垂直','下放用 2 到 3 秒，脚跟接近地面但不落地'],
+  bad:['下放时腰部拱起离开地面','靠甩腿借力','下放太快，没有控制']},
+ {id:'pullup',name:'引体向上',type:'reps',unit:'次',target:3,dg:'pullup',
+  cues:['正手握杠，略宽于肩，从手臂完全伸直的悬垂开始','先下沉肩胛、挺胸，再屈肘上拉','想着把手肘拉向身体两侧的口袋，下巴过杠','下放用 2 到 3 秒，回到手臂伸直','核心收紧，双腿不前后摆动'],
+  bad:['耸肩，只用手臂硬拉','蹬腿摆荡借力','只做半程，下放不到底']}
 ];
-const SEED_TPL=[{id:'run-strength',name:'跑步力量',items:[['wallsit',5],['calf',5],['squat',5],['lunge',3],['bulgarian',3],['crab',3],['pushup',5],['plank',5]].map(([exId,sets])=>({exId,sets}))}];
-function seed(){return{exercises:JSON.parse(JSON.stringify(SEED_EX)),templates:JSON.parse(JSON.stringify(SEED_TPL)),sessions:[],active:null,
+const SEED_TPL=[{id:'run-strength',name:'跑步力量',items:[['wallsit',5],['calf',5],['squat',5],['lunge',3],['bulgarian',3],['crab',3],['pushup',5],['plank',5],['crunch',5],['legraise',3],['pullup',3]].map(([exId,sets])=>({exId,sets}))}];
+function seed(){return{v:2,exercises:JSON.parse(JSON.stringify(SEED_EX)),templates:JSON.parse(JSON.stringify(SEED_TPL)),sessions:[],active:null,
   settings:{rest:60,strava:{clientId:'296998',clientSecret:'',mode:'merge',tok:null,athlete:''}}}}
 let S=load();if(!S.settings.strava.clientId)S.settings.strava.clientId='296998';
 function load(){try{const r=localStorage.getItem(KEY);if(r){const d=JSON.parse(r);if(d&&d.exercises&&d.templates)return d}}catch(e){}return seed()}
@@ -345,7 +357,7 @@ function renderWk(){
 function paintTick(){
   const a=S.active;if(!a||!ui.wk)return;
   const c=$('#clock');if(c)c.textContent=mmss((Date.now()-a.start)/1000);
-  const p=$('#prog');if(p){const all=a.items.reduce((n,i)=>n+i.sets.length,0),dn=a.items.reduce((n,i)=>n+i.sets.filter(x=>x.done).length,0);p.textContent='已完成 '+dn+' / '+all+' 组'}
+  const p=$('#prog');if(p){const all=a.items.reduce((n,i)=>n+i.sets.length,0),dn=a.items.reduce((n,i)=>n+i.sets.filter(x=>x.done).length,0);p.textContent=dn+'/'+all+' 组，'+a.items.filter(i=>i.sets.every(x=>x.done)).length+'/'+a.items.length+' 动作'}
   const bar=$('#tbar');if(!bar)return;
   if(!T){bar.classList.remove('on');return}
   const left=(T.end-Date.now())/1000;
@@ -504,6 +516,11 @@ window.addEventListener('hashchange',()=>{if(ui.keep)ui.keep=false;else ui.sheet
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){keepAwake();retryPending();paintTick()}});
 
 /* ---------- 启动 ---------- */
+if((S.v||1)<2){ // 第 2 版：补上卷腹、平躺抬腿、引体向上
+  const t=S.templates.find(x=>x.id==='run-strength');
+  [['crunch',5],['legraise',3],['pullup',3]].forEach(([id,sets])=>{if(!exById(id))S.exercises.push(JSON.parse(JSON.stringify(SEED_EX.find(x=>x.id===id))));if(t&&!t.items.some(i=>i.exId===id))t.items.push({exId:id,sets})});
+  const pu=exById('pushup');if(pu&&pu.target===12)pu.target=15;S.v=2;save();
+}
 tick=setInterval(paintTick,250);
 if(S.active)ui.wk=false;
 render();

@@ -194,6 +194,14 @@ body{-webkit-touch-callout:none}
 .links [data-confirm]{color:var(--red)}
 .links [data-armed]{font-weight:600}
 .wk footer{padding:10px 16px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;border-top:.5px solid var(--line);background:var(--bg)}
+.restbox{position:relative;width:260px;height:260px;align-self:center;margin:6px 0 2px;flex:none}
+.restbox svg{width:100%;height:100%}
+.restbox circle{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round}
+.restbox .trk{stroke:var(--panel2)}
+.restnum{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.restnum .big{font-size:66px}
+.next{text-align:center;color:var(--mute)} .next b{color:var(--ink);font-weight:600}
+.recall{font-size:20px;font-weight:700;padding:10px 4px 0}
 .rest{display:none;align-items:center;gap:10px}
 .rest.on{display:flex}
 .rest .t{font:700 28px/1 var(--round);min-width:74px}
@@ -273,13 +281,16 @@ function fig(ex,cls){
   const n=d.length,W=n*100+(n-1)*16;
   return `<svg class="fig ${cls||''}" viewBox="0 0 ${W} 100" style="aspect-ratio:${W}/100" role="img" aria-label="${h(ex.name)}示意图">${d.map((q,k)=>pose(q,k*116)).join('')}${n>1?'<path class="ar" d="M102 50h11m-4-4 4 4-4 4"/>':''}</svg>`;
 }
-function teach(e){
+function teachDo(e){ // 做动作时看：步骤，最后用一句话收尾
+  return (e.cues&&e.cues.length?`<h3>怎么做</h3><section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:'')
+    +(e.tip?`<section class="card tipc"><span class="small mute">记住一句话</span><b>${h(e.tip)}</b></section>`:'');
+}
+function teachCheck(e){ // 做完后回想：感觉对不对，有没有犯常见错误
   const bad=(e.bad||[]).map(x=>{const q=String(x).split('→');return `<li>${h(q[0].trim())}${q[1]?`<em>改：${h(q.slice(1).join('→').trim())}</em>`:''}</li>`}).join('');
-  return (e.tip?`<section class="card tipc"><span class="small mute">记住一句话</span><b>${h(e.tip)}</b></section>`:'')
-    +(e.cues&&e.cues.length?`<h3>怎么做</h3><section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:'')
-    +(e.feel?`<h3>做对了的感觉</h3><section class="card"><p>${h(e.feel)}</p></section>`:'')
+  return (e.feel?`<h3>做对了的感觉</h3><section class="card"><p>${h(e.feel)}</p></section>`:'')
     +(bad?`<h3>常见错误和改法</h3><section class="card"><ul class="cues bad">${bad}</ul></section>`:'');
 }
+const teach=e=>teachDo(e)+teachCheck(e);
 function logText(s){
   const lines=s.items.map(it=>{const dn=it.sets.filter(x=>x.done);if(!dn.length)return null;
     const v=dn.map(x=>x.val+(x.w?'×'+x.w+'kg':''));const same=v.every(a=>a===v[0]);
@@ -350,7 +361,7 @@ function vSettings(){
     <p class="small mute">连接后，每次结束训练会自动在 Strava 新建一条力量训练，写入动作和组数。</p>
   </section>
   <section class="card"><h3>备份</h3><p class="small mute">数据只保存在这台手机的这个 App 里。换手机或清除网站数据前，先复制一份备份。</p><div class="row"><button class="btn grow" data-act="backup">备份与恢复</button></div></section>
-  <p class="small mute" style="text-align:center">版本 7</p>`;
+  <p class="small mute" style="text-align:center">版本 8</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -415,8 +426,23 @@ function advance(){ // 当前动作做完后跳到下一个还没做完的动作
   let k=a.items.findIndex((it,n)=>n>a.cur&&it.sets.some(x=>!x.done));if(k<0)k=a.items.findIndex(it=>it.sets.some(x=>!x.done));
   if(k>=0)a.cur=k;
 }
+function renderRest(el,a){ // 做完一组后的整屏休息：大倒计时，下面回想刚才那个动作
+  const it=curItem(),j=it.sets.findIndex(x=>!x.done),from=a.items[T.from]||it,e=exById(from.exId)||{},C=2*Math.PI*112;
+  el.innerHTML=`<div class="wk"><header class="bar"><button data-act="w-min" aria-label="收起"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><div class="pager"><span>休息</span></div>
+    <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="确认结束">结束</button></div></header>
+  <div class="list">
+    <div class="restbox"><svg viewBox="0 0 260 260" aria-hidden="true"><circle class="trk" cx="130" cy="130" r="112"/><circle class="arc" id="rarc" cx="130" cy="130" r="112" transform="rotate(-90 130 130)" stroke-dasharray="${C} ${C}"/></svg>
+      <div class="restnum"><span class="big num" id="tt">00:00</span><button class="btn sm tint" data-act="t-add">+15 秒</button></div></div>
+    <p class="next">${a.pAt?'已暂停':'接下来'} <b>${h(it.name)}</b>${j>=0?' 第 '+(j+1)+' 组':''}</p>
+    ${e.feel||(e.bad&&e.bad.length)?`<p class="recall">回想刚才的${h(from.name)}</p>`:''}
+    ${teachCheck(e)}
+  </div>
+  <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':'<button class="btn go lg wide" data-act="t-skip">跳过休息</button>'}</footer></div>`;
+  paintTick();
+}
 function renderWk(){
   const el=$('#wk'),a=S.active;el.classList.toggle('on',!!(a&&ui.wk));if(!a||!ui.wk){el.innerHTML='';return}
+  if(T&&T.kind==='rest'&&!allDone())return renderRest(el,a);
   const it=curItem(),i=a.cur,n=a.items.length,j=it.sets.findIndex(x=>!x.done),e=exById(it.exId)||{};
   const tot=a.items.reduce((m,x)=>m+x.sets.length,0),dn=a.items.reduce((m,x)=>m+x.sets.filter(y=>y.done).length,0);
   const timing=T&&T.kind==='hold'&&T.i===i,fin=allDone();
@@ -439,10 +465,10 @@ function renderWk(){
     <div class="xhead"><h1>${h(it.name)}</h1>${a.pAt?'<span class="pill wait">已暂停</span>':''}<span class="clock" id="clock">00:00</span></div>
     <div class="dots">${it.sets.map((x,k)=>`<i class="${x.done?'on':k===j?'cur':''}"></i>`).join('')}<span>${j<0?'已完成':'第 '+(j+1)+' 组'}，共 ${it.sets.length} 组</span></div>
     <section class="card hero">${fig(e)}<div class="heromain">${main}${kg}</div></section>
-    ${teach(e)}
+    ${teachDo(e)}
     ${it.sets.some(x=>x.done)?'<div class="links"><button data-act="undo">撤销上一组</button></div>':''}
   </div>
-  <footer><div class="rest" id="rest"><span class="mute">休息</span><span class="t num" id="tt"></span><span class="grow"></span><button class="btn sm tint" data-act="t-add">+15 秒</button><button class="btn sm tint" data-act="t-skip">跳过</button></div>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':btn}</footer></div>`;
+  <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':btn}</footer></div>`;
   paintTick();
 }
 const elapsed=a=>((a.pAt||Date.now())-a.start-(a.pz||0))/1000;
@@ -450,12 +476,12 @@ function paintTick(){
   const a=S.active;if(!a||!ui.wk)return;
   const now=a.pAt||Date.now(),c=$('#clock');if(c)c.textContent=mmss(elapsed(a));
   if(T&&T.kind==='hold'){const b=$('#big');if(b&&T.i===a.cur)b.textContent=mmss((now-T.start)/1000)}
-  const r=$('#rest');if(!r)return;
   if(T&&T.kind==='rest'){const left=(T.end-now)/1000;
-    if(left<=0&&!a.pAt){T=null;beep();r.classList.remove('on')}else{r.classList.add('on');$('#tt').textContent=mmss(left)}}
-  else r.classList.remove('on');
+    if(left<=0&&!a.pAt){T=null;beep();renderWk();return}
+    const t=$('#tt');if(t)t.textContent=mmss(left);
+    const r=$('#rarc');if(r){const C=2*Math.PI*112;r.setAttribute('stroke-dasharray',C*Math.max(0,Math.min(1,left/T.total))+' '+C)}}
 }
-function startRest(){const r=S.settings.rest;T=r>0?{kind:'rest',end:Date.now()+r*1000,label:'组间休息'}:null}
+function startRest(from){const r=S.settings.rest;T=r>0?{kind:'rest',end:Date.now()+r*1000,total:r,from}:null}
 let AC,wake;
 function prime(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}}
 function beep(){try{[0,.25].forEach(d=>{const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value=880;const t=AC.currentTime+d;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.2)})}catch(e){}}
@@ -557,16 +583,16 @@ const A={
   'ex-save'(b){saveEx(b.dataset.id);return false},
   'w-min'(){ui.wk=false},
   'w-resume'(){prime();ui.wk=true;keepAwake()},
-  chk(b){prime();const it=S.active.items[+b.dataset.i],st=it.sets[+b.dataset.j];st.val=Math.max(0,+st.val||0)||it.target;st.done=true;advance();if(allDone())T=null;else startRest();save()},
+  chk(b){prime();const it=S.active.items[+b.dataset.i],st=it.sets[+b.dataset.j];st.val=Math.max(0,+st.val||0)||it.target;st.done=true;advance();if(allDone())T=null;else startRest(+b.dataset.i);save()},
   bump(b){const it=curItem(),st=it.sets.find(x=>!x.done);if(st){st.val=Math.max(1,(+st.val||0)+ +b.dataset.d);save()}},
   hold(b){prime();const i=+b.dataset.i,j=+b.dataset.j;T={kind:'hold',i,j,start:Date.now()}},
-  't-stop'(){if(!T||T.kind!=='hold')return false;const st=S.active.items[T.i].sets[T.j];st.val=Math.max(1,Math.round((Date.now()-T.start)/1000));st.done=true;T=null;advance();if(!allDone())startRest();save()},
+  't-stop'(){if(!T||T.kind!=='hold')return false;const st=S.active.items[T.i].sets[T.j];st.val=Math.max(1,Math.round((Date.now()-T.start)/1000));st.done=true;const from=T.i;T=null;advance();if(!allDone())startRest(from);save()},
   undo(){const it=curItem();for(let k=it.sets.length-1;k>=0;k--)if(it.sets[k].done){it.sets[k].done=false;break}save()},
   'w-go'(b){const a=S.active;a.cur=Math.min(a.items.length-1,Math.max(0,a.cur+ +b.dataset.d));if(T&&T.kind==='hold')T=null;save()},
   'w-nextopen'(){const a=S.active;const k=a.items.findIndex(it=>it.sets.some(x=>!x.done));if(k>=0)a.cur=k;save()},
   'w-end'(){finishWorkout();return false},
-  't-add'(){if(T&&T.kind==='rest')T.end+=15000;paintTick();return false},
-  't-skip'(){T=null;paintTick();return false},
+  't-add'(){if(T&&T.kind==='rest'){T.end+=15000;T.total+=15}paintTick();return false},
+  't-skip'(){T=null},
   'w-pause'(){prime();const a=S.active,now=Date.now();
     if(a.pAt){const d=now-a.pAt;a.pz=(a.pz||0)+d;a.pAt=null;if(T){if(T.kind==='rest')T.end+=d;else T.start+=d}}else a.pAt=now;save()},
   'w-askdrop'(){ui.sheet={t:'drop'}},

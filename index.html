@@ -201,12 +201,39 @@ body{-webkit-touch-callout:none}
 .restbox circle{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round}
 .restbox .trk{stroke:var(--panel2)}
 .restnum{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
-.restnum .big{font-size:66px}
+.restnum .big{font-size:58px}
 .next{text-align:center;color:var(--mute)} .next b{color:var(--ink);font-weight:600}
 .recall{font-size:20px;font-weight:700;padding:10px 4px 0}
 .rest{display:none;align-items:center;gap:10px}
 .rest.on{display:flex}
 .rest .t{font:700 28px/1 var(--round);min-width:74px}
+
+/* 第 12 版：统一整理 */
+.top a.me{color:var(--mute);font-size:15px;font-weight:500}
+.center{padding-bottom:2vh}
+.ringbtn{width:208px;height:208px;margin-bottom:34px}
+.center h1{font-size:30px}
+.center .sub{font-size:17px;color:var(--mute);margin-top:6px}
+.center .sub2{font:500 13px var(--round);color:var(--mute);opacity:.75;margin-top:14px;letter-spacing:.02em}
+.footnote{font-size:12px;line-height:1.5;color:var(--mute);opacity:.8;text-align:center;max-width:270px;align-self:center}
+h3{margin-top:6px;text-transform:none}
+.card.list{padding:0 16px;gap:0}
+.lrow{display:flex;align-items:center;gap:12px;min-height:50px;width:100%;text-align:left;font-size:17px;color:var(--ink);text-decoration:none;border-bottom:.5px solid var(--line)}
+.lrow:last-child{border-bottom:0}
+.lrow:not(.nochev)::after{content:"›";color:var(--mute);font-size:20px;opacity:.6}
+.lrow .step span{min-width:54px;font-size:17px}
+.foot{font-size:13px;line-height:1.45;color:var(--mute);padding:0 16px;margin-top:-6px}
+.day i{width:26px;height:26px;border-width:2px}
+.stats b{font-size:28px}
+.pager button{color:var(--mute)}
+.bar .r [data-act="w-finish"]{color:var(--red)}
+.xhead h1{font-size:32px;letter-spacing:0}
+.dots .clock{font:600 15px var(--round);color:var(--mute);margin-left:8px}
+.tipc{border:0;border-radius:16px;background:color-mix(in srgb,var(--accent) 15%,var(--panel));gap:2px}
+.tipc .small{color:var(--tint)}
+.tipc b{font-size:18px}
+.cues{font-size:16px}
+.wk .list{gap:12px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -320,8 +347,7 @@ function resumeBar(){return S.active&&!ui.wk?`<button class="resume" data-act="w
 const WHO='Koomoo';
 function vHome(){
   const t=S.templates[0],w=weekInfo(),a=S.active,goal=3,C=2*Math.PI*92,arc=C*Math.min(1,w.count/goal);
-  const date=new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'});
-  return `<div class="top"><span class="date">${date}</span><a class="me" href="#me"><span>${WHO}</span><i>${WHO[0]}</i></a></div>
+  return `<div class="top"><span></span><a class="me" href="#me">${WHO}</a></div>
   <div class="center">
     <button class="ringbtn" data-act="${a?'w-resume':'start'}" data-id="${t?t.id:''}" aria-label="${a?'继续训练':'开始训练'}">
       <svg viewBox="0 0 216 216" aria-hidden="true"><circle class="trk" cx="108" cy="108" r="92"/>${arc?`<circle class="arc" cx="108" cy="108" r="92" stroke-dasharray="${arc} ${C}" transform="rotate(-90 108 108)"/>`:''}</svg>
@@ -329,15 +355,15 @@ function vHome(){
     </button>
     <h1>${h(a?a.name:t?t.name:'还没有训练模版')}</h1>
     <p class="sub">${a?'训练进行中，点按继续':t?t.items.length+' 个动作 · '+t.items.reduce((n,i)=>n+i.sets,0)+' 组':'在设置里新建一个'}</p>
-    <p class="wk-goal">本周 ${w.count} / ${goal} 天</p>
-    <p class="hint">开始前先在 Apple Watch 上开一条“传统力量训练”，心率会随手表记录一起进到这里</p>
-  </div>`;
+    <p class="sub2">本周 ${w.count} / ${goal} 天</p>
+  </div>
+  <p class="footnote">开始前先在 Apple Watch 上开一条“传统力量训练”，心率会随手表记录一起同步。</p>`;
 }
 function vMoves(){
   return `<div class="top"><a href="#prefs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>设置</a><span></span></div><div class="head"><h1>动作与要点</h1><button class="btn sm go" data-act="ex-new">添加动作</button></div>
   <div class="grid">${S.exercises.map(e=>`<button class="tile" data-act="open-ex" data-id="${e.id}">${fig(e)}<b>${h(e.name)}</b><span class="mute small">目标 ${e.target} ${h(e.unit)}</span></button>`).join('')}</div>`;
 }
-function stPill(s){const st=s.strava||{};return st.state==='done'?'<span class="pill ok">已同步 Strava</span>':st.state==='pending'?'<span class="pill wait">等待手表记录</span>':st.state==='error'?'<span class="pill bad">同步失败</span>':'<span class="pill">未同步</span>'}
+function stPill(s){const st=s.strava||{};return st.state==='done'?'<span class="pill ok">已同步</span>':st.state==='pending'?'<span class="pill wait">等待手表记录</span>':st.state==='error'?'<span class="pill bad">同步失败</span>':'<span class="pill">未同步</span>'}
 function vMe(){
   const w=weekInfo();
   const list=S.sessions.length?`<section class="card" style="gap:0;padding-top:2px;padding-bottom:2px">${S.sessions.map(s=>{const d=new Date(s.start);
@@ -350,21 +376,30 @@ function vMe(){
   <h3>历史记录</h3>${list}`;
 }
 function vSettings(){
-  const c=S.settings.strava,preview=/claude/.test(location.host),ok=!!c.tok;
+  const c=S.settings.strava,preview=/claude/.test(location.host),ok=!!c.tok,t=S.templates[0],open=ui.stOpen||!ok;
   return `<div class="top"><a href="#me"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>返回</a><span></span></div><h1>设置</h1>
-  <section class="card"><h3>训练内容</h3><div class="row">${S.templates[0]?`<button class="btn grow" data-act="open-tpl" data-id="${S.templates[0].id}" data-edit="1">编辑训练模版</button>`:'<button class="btn grow" data-act="tpl-new">新建模版</button>'}<a class="btn grow" href="#moves">动作与要点</a></div></section>
-  <section class="card"><h3>组间休息</h3><div class="row"><span class="grow">每组完成后自动倒计时</span><div class="step"><button data-act="rest" data-d="-15" aria-label="减少">−</button><span style="min-width:48px">${S.settings.rest} 秒</span><button data-act="rest" data-d="15" aria-label="增加">+</button></div></div></section>
-  <section class="card"><div class="row"><h3 class="grow">STRAVA</h3>${ok?`<span class="pill ok">已连接${c.athlete?' '+h(c.athlete):''}</span>`:'<span class="pill">未连接</span>'}</div>
-    ${preview?'<p class="note">这个预览页面会拦截发往 Strava 的请求。把 App 部署到你自己的网址后，连接和上传才能生效。</p>':''}
-    ${ui.msg?`<p class="note">${h(ui.msg)}</p>`:''}
-    <ol class="steps"><li>在 strava.com/settings/api 的“客户端密钥”一栏点“显示”，复制那串字符</li><li>粘贴到下面的 Client Secret</li><li>点“连接 Strava”并授权</li></ol>
-    <div class="two"><label class="f" for="st-id">Client ID<input id="st-id" type="text" inputmode="numeric" data-f="st-id" value="${h(c.clientId)}"></label><label class="f" for="st-sec">Client Secret<input id="st-sec" type="password" data-f="st-sec" value="${h(c.clientSecret)}"></label></div>
-    <div class="row">${c.clientId&&c.clientSecret?`<a class="btn go grow" href="${h(authUrl())}">${ok?'重新授权':'连接 Strava'}</a>`:'<span class="mute small grow">填好两项后出现连接按钮</span>'}${ok?'<button class="btn" data-act="st-off">断开</button>':''}</div>
-    <label class="f" for="st-paste">授权后没有自动回到 App？把跳转后的完整网址粘贴到这里<input id="st-paste" type="text" placeholder="https://…?code=…"></label><button class="btn sm" data-act="st-paste">用这个网址完成连接</button>
-    <p class="small mute">连接后，每次结束训练，App 会在 Strava 上找到 Apple Watch 记录的那条活动，把动作和组数写进去，并取回平均和最高心率。手表记录还没同步过来时会显示“等待手表记录”，下次打开 App 自动重试。</p>
+  <h3>训练</h3>
+  <section class="card list">
+    ${t?`<button class="lrow" data-act="open-tpl" data-id="${t.id}" data-edit="1"><span class="grow">训练模版</span><span class="mute">${t.items.length} 个动作</span></button>`:'<button class="lrow" data-act="tpl-new"><span class="grow">新建训练模版</span></button>'}
+    <a class="lrow" href="#moves"><span class="grow">动作与要点</span><span class="mute">${S.exercises.length} 个</span></a>
+    <div class="lrow nochev"><span class="grow">组间休息</span><div class="step"><button data-act="rest" data-d="-15" aria-label="减少">−</button><span class="num">${S.settings.rest} 秒</span><button data-act="rest" data-d="15" aria-label="增加">+</button></div></div>
   </section>
-  <section class="card"><h3>备份</h3><p class="small mute">数据只保存在这台手机的这个 App 里。换手机或清除网站数据前，先复制一份备份。</p><div class="row"><button class="btn grow" data-act="backup">备份与恢复</button></div></section>
-  <p class="small mute" style="text-align:center">版本 11</p>`;
+  <h3>Strava</h3>
+  <section class="card list"><div class="lrow nochev"><span class="grow">${ok?'已连接'+(c.athlete?' · '+h(c.athlete):''):'未连接'}</span>${ok?`<button class="btn sm" data-act="st-toggle">${ui.stOpen?'收起':'管理'}</button>`:''}</div></section>
+  ${preview?'<p class="note">这个预览页面会拦截发往 Strava 的请求，连接和上传只在你自己的网址上生效。</p>':''}
+  ${ui.msg?`<p class="note">${h(ui.msg)}</p>`:''}
+  ${open?`<section class="card">
+    ${ok?'':'<ol class="steps"><li>打开 strava.com/settings/api，在“客户端密钥”一栏点“显示”，复制那串字符</li><li>粘贴到下面的 Client Secret</li><li>点“连接 Strava”并授权</li></ol>'}
+    <div class="two"><label class="f" for="st-id">Client ID<input id="st-id" type="text" inputmode="numeric" data-f="st-id" value="${h(c.clientId)}"></label><label class="f" for="st-sec">Client Secret<input id="st-sec" type="password" data-f="st-sec" value="${h(c.clientSecret)}"></label></div>
+    ${c.clientId&&c.clientSecret?`<a class="btn go" href="${h(authUrl())}">${ok?'重新授权':'连接 Strava'}</a>`:'<p class="mute small">填好两项后出现连接按钮</p>'}
+    <label class="f" for="st-paste">授权后没有自动回到 App？把跳转后的完整网址粘贴到这里<input id="st-paste" type="text" placeholder="https://…?code=…"></label>
+    <button class="btn" data-act="st-paste">用这个网址完成连接</button>
+    ${ok?'<button class="btn ghost" data-act="st-off" data-confirm="再点一次，断开 Strava">断开连接</button>':''}
+  </section>`:''}
+  <p class="foot">训练结束后，App 会在 Strava 上找到 Apple Watch 记录的那条活动，写入动作明细并取回心率。手表记录还没同步时显示“等待手表记录”，下次打开自动重试。</p>
+  <h3>数据</h3>
+  <section class="card list"><button class="lrow" data-act="backup"><span class="grow">备份与恢复</span></button></section>
+  <p class="foot">训练记录只保存在这台手机上。版本 12</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -463,8 +498,8 @@ function renderWk(){
     <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="确认结束">结束</button></div></header>
   <div class="prog"><i style="width:${tot?dn/tot*100:0}%"></i></div>
   <div class="list">
-    <div class="xhead"><h1>${h(it.name)}</h1>${a.pAt?'<span class="pill wait">已暂停</span>':''}<span class="clock" id="clock">00:00</span></div>
-    <div class="dots">${it.sets.map((x,k)=>`<i class="${x.done?'on':k===j?'cur':''}"></i>`).join('')}<span>${j<0?'已完成':'第 '+(j+1)+' 组'}，共 ${it.sets.length} 组</span></div>
+    <div class="xhead"><h1>${h(it.name)}</h1></div>
+    <div class="dots">${it.sets.map((x,k)=>`<i class="${x.done?'on':k===j?'cur':''}"></i>`).join('')}<span>${j<0?'已完成':'第 '+(j+1)+' 组'}，共 ${it.sets.length} 组</span><span class="grow"></span>${a.pAt?'<span class="pill wait">已暂停</span>':''}<span class="clock num" id="clock">00:00</span></div>
     <section class="card hero">${fig(e)}<div class="heromain">${main}${kg}</div></section>
     ${teachDo(e)}
     ${it.sets.some(x=>x.done)?'<div class="links"><button data-act="undo">撤销上一组</button></div>':''}
@@ -607,6 +642,7 @@ const A={
   'st-off'(){const c=S.settings.strava;c.tok=null;c.athlete='';ui.msg='已断开 Strava。';save()},
   'st-paste'(){const v=$('#st-paste').value.trim(),m=v.match(/[?&]code=([^&\s]+)/);const code=m?m[1]:(/^[0-9a-f]{20,}$/i.test(v)?v:'');if(!code){ui.msg='没有在这段文字里找到授权码，请粘贴跳转后的完整网址。';return}finishAuth(code);return false},
   backup(){ui.sheet={t:'backup'}},
+  'st-toggle'(){ui.stOpen=!ui.stOpen},
   'bk-copy'(){const t=$('#bk');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).then(()=>$('#bk-msg').textContent='已复制。',()=>$('#bk-msg').textContent='自动复制失败，请长按文本框手动全选复制。');return false},
   'bk-load'(){try{const d=JSON.parse($('#bk').value);if(!d.exercises||!d.templates||!d.sessions)throw 0;const keep=S.settings.strava;S={...seed(),...d,active:null};S.settings.strava={...S.settings.strava,clientId:keep.clientId,clientSecret:keep.clientSecret,tok:keep.tok,athlete:keep.athlete};save();ui.sheet=null}catch(e){$('#bk-msg').textContent='内容不是有效的备份，没有做任何更改。';return false}}
 };

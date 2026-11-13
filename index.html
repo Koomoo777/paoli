@@ -195,6 +195,7 @@ body{-webkit-touch-callout:none}
 .links [data-confirm]{color:var(--red)}
 .links [data-armed]{font-weight:600}
 .wk footer{padding:10px 16px calc(12px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;border-top:.5px solid var(--line);background:var(--bg)}
+.wk .list.restonly{justify-content:center;padding-bottom:8vh}
 .restbox{position:relative;width:260px;height:260px;align-self:center;margin:6px 0 2px;flex:none}
 .restbox svg{width:100%;height:100%}
 .restbox circle{fill:none;stroke:var(--accent);stroke-width:12;stroke-linecap:round}
@@ -363,7 +364,7 @@ function vSettings(){
     <p class="small mute">连接后，每次结束训练，App 会在 Strava 上找到 Apple Watch 记录的那条活动，把动作和组数写进去，并取回平均和最高心率。手表记录还没同步过来时会显示“等待手表记录”，下次打开 App 自动重试。</p>
   </section>
   <section class="card"><h3>备份</h3><p class="small mute">数据只保存在这台手机的这个 App 里。换手机或清除网站数据前，先复制一份备份。</p><div class="row"><button class="btn grow" data-act="backup">备份与恢复</button></div></section>
-  <p class="small mute" style="text-align:center">版本 9</p>`;
+  <p class="small mute" style="text-align:center">版本 10</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -429,15 +430,12 @@ function advance(){ // 当前动作做完后跳到下一个还没做完的动作
   if(k>=0)a.cur=k;
 }
 function renderRest(el,a){ // 做完一组后的整屏休息：大倒计时，下面回想刚才那个动作
-  const it=curItem(),j=it.sets.findIndex(x=>!x.done),from=a.items[T.from]||it,e=exById(from.exId)||{},C=2*Math.PI*112;
+  const C=2*Math.PI*112;
   el.innerHTML=`<div class="wk"><header class="bar"><button data-act="w-min" aria-label="收起"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><div class="pager"><span>休息</span></div>
     <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="确认结束">结束</button></div></header>
-  <div class="list">
+  <div class="list restonly">
     <div class="restbox"><svg viewBox="0 0 260 260" aria-hidden="true"><circle class="trk" cx="130" cy="130" r="112"/><circle class="arc" id="rarc" cx="130" cy="130" r="112" transform="rotate(-90 130 130)" stroke-dasharray="${C} ${C}"/></svg>
       <div class="restnum"><span class="big num" id="tt">00:00</span><button class="btn sm tint" data-act="t-add">+15 秒</button></div></div>
-    <p class="next">${a.pAt?'已暂停':'接下来'} <b>${h(it.name)}</b>${j>=0?' 第 '+(j+1)+' 组':''}</p>
-    ${e.feel||(e.bad&&e.bad.length)?`<p class="recall">回想刚才的${h(from.name)}</p>`:''}
-    ${teachCheck(e)}
   </div>
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':'<button class="btn go lg wide" data-act="t-skip">跳过休息</button>'}</footer></div>`;
   paintTick();

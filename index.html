@@ -104,11 +104,7 @@ h3{font-size:13px;font-weight:400;color:var(--mute);padding:6px 16px 0}
 .tile .no{position:absolute;left:12px;top:10px;font:600 13px var(--round);color:var(--mute)}
 .tile b{font-size:16px;line-height:1.3;font-weight:600}
 .fig{height:76px;width:auto;max-width:100%;align-self:center;display:block;flex:none}
-.fig polyline,.fig path{fill:none;stroke:var(--ink);stroke-linecap:round;stroke-linejoin:round}
-.fig .t{stroke-width:9} .fig .b{stroke-width:6} .fig .f{stroke-width:6;opacity:.32}
-.fig .h{stroke:var(--hot)} .fig .p{stroke:var(--mute);stroke-width:2.2;opacity:.7}
-.fig .d{stroke:var(--hot);stroke-width:2.6;stroke-dasharray:1 6} .fig .ar{stroke:var(--mute);stroke-width:2.4}
-.fig circle{fill:var(--ink)}
+.fig path,.fig ellipse{stroke:none}
 .figbig{height:140px}
 .thumb{width:84px;height:84px;border-radius:12px;object-fit:cover;align-self:center;flex:none}
 
@@ -329,6 +325,45 @@ h3{margin-top:6px;text-transform:none}
 .sw,.sw i{transition-timing-function:var(--ease);transition-duration:.28s}
 @media (prefers-reduced-motion:reduce){.pushIn,.pushOut,.popIn,.pgghost.popOut,.sheetIn,.coverIn,.slideL,.slideR,.fadeIn,#wk.out,#sheet.out .sheet{animation-duration:.01s!important}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ===== 第 21 版：训练页一屏放下；组数竖排在左并带上次的数值；肌肉示意图 ===== */
+.fig .sil{fill:color-mix(in srgb,var(--ink) 11%,var(--panel))}
+.fig .m{fill:color-mix(in srgb,var(--ink) 19%,var(--panel))}
+.fig .m.s{fill:color-mix(in srgb,var(--hot) 42%,var(--panel))}
+.fig .m.p{fill:var(--hot)}
+.figbig{height:200px}
+.tile .fig{height:96px}
+section.f{display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--mute)}
+.wk .list{padding:calc(12px*var(--k,1)) 16px calc(env(safe-area-inset-bottom) + 80px);gap:calc(10px*var(--k,1))}
+.wk .list>*{flex:none}
+.xhead h1{font-size:calc(28px*var(--k,1))}
+.wk .list>.hero{flex:1 1 0;min-height:calc(236px*var(--k,1));max-height:400px;flex-direction:row;align-items:stretch;gap:12px;padding:12px}
+.hero .chips{flex:none;width:62px;flex-direction:column;flex-wrap:nowrap;gap:6px}
+.hero .chip{flex:1 1 0;min-height:0;max-height:54px;min-width:0;width:100%;height:auto;padding:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.hero .chip:disabled{opacity:.6}
+.hero .chip.on{background:color-mix(in srgb,var(--accent) 18%,var(--panel))}
+.chip b{font:700 18px/1 var(--round)}
+.chip small{font:500 10.5px/1 var(--body);color:var(--mute);white-space:nowrap}
+.heromain{min-height:0;justify-content:center;gap:0}
+.hero .fig{flex:1 1 0;min-height:0;height:auto;width:100%;margin-bottom:6px}
+.hero .thumb{width:104px;height:104px;margin-bottom:6px}
+.hero .big,.hero .stepper input.big{font-size:calc(50px*var(--k,1))}
+.hero .stepper input.big{width:96px}
+.hero .unit{font-size:14px}
+.hero .links{padding:0}.hero .links button{min-height:30px;font-size:14px}
+.wk .list>.card:not(.hero){padding:calc(12px*var(--k,1)) 14px}
+.wk .cues{font-size:calc(15px*var(--k,1));line-height:1.36;gap:calc(6px*var(--k,1))}
+.wk .cues.bad{gap:calc(9px*var(--k,1))}
+.wk .tipc b{font-size:calc(16px*var(--k,1))}
+.wk .card p{font-size:calc(15px*var(--k,1))}
+.restbox{flex:1 1 0!important;min-height:150px;max-height:260px;width:auto;height:auto;align-self:stretch;margin:0;container-type:size}
+.restbox svg{position:absolute;inset:0}
+.restnum{gap:clamp(2px,3cqmin,10px)}
+.restnum .big{font-size:clamp(34px,22cqmin,58px)}
+.restbox.prep .big{font-size:clamp(56px,37cqmin,96px)}
+.mups{display:flex;flex-wrap:wrap;gap:8px}
+.mups button{min-height:34px;padding:0 12px;border-radius:99px;background:var(--panel);font-size:15px;color:var(--ink)}
+.mups button.on{background:var(--hot);color:#fff}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -341,29 +376,41 @@ h3{margin-top:6px;text-transform:none}
 "use strict";
 /* ---------- 数据 ---------- */
 const KEY='paoli.v1';
-// 每个动作 1 到 2 个姿势（起始 → 发力终点）。t 躯干，b 近侧肢体，f 远侧肢体（淡），h 主要发力部位，p 道具和标记，d 虚线
-const DG={
- wallsit:[{head:[30,22],t:'27,34 27,62',b:['49,62 49,90 58,91','27,37 41,37 54,37'],h:['27,62 49,62'],p:['21,6 21,92','43,62 43,68 49,68','27,56 33,56 33,62']}],
- calf:[{head:[50,11],t:'50,22 50,50',f:['50,50 55,70 45,80'],b:['50,50 50,70','46,91 59,91','50,25 62,36 79,32'],h:['50,70 50,90'],p:['80,8 80,92']},
-       {head:[50,4],t:'50,15 50,43',f:['50,43 55,63 45,73'],b:['50,43 50,63','50,83 56,91 60,91','50,18 62,30 79,27'],h:['50,63 50,83'],p:['80,8 80,92','38,90 38,78','35,81 38,78 41,81']}],
- squat:[{head:[50,11],t:'50,22 50,50',b:['50,70 50,90','46,91 60,91','50,25 62,28 74,28'],h:['50,50 50,70']},
-        {head:[59,35],t:'55,45 40,68',b:['62,66 54,90','48,91 64,91','55,47 67,47 79,45'],h:['40,68 62,66']}],
- lunge:[{head:[50,11],t:'50,22 50,50',b:['50,70 50,90','46,91 60,91','50,25 58,36 52,46'],h:['50,50 50,70']},
-        {head:[48,25],t:'48,36 48,64',f:['48,64 47,85 30,81 27,91'],b:['67,68 67,90','63,91 76,91','48,39 56,50 50,60'],h:['48,64 67,68']}],
- bulgarian:[{head:[55,11],t:'54,22 52,50',f:['52,50 40,70 22,68'],b:['62,72 62,90','58,91 71,91','54,25 61,36 55,46'],h:['52,50 62,72'],p:['8,92 8,70 26,70 26,92']},
-            {head:[59,27],t:'56,38 50,64',f:['50,64 40,84 22,68'],b:['66,68 64,90','60,91 73,91','56,41 63,52 56,60'],h:['50,64 66,68'],p:['8,92 8,70 26,70 26,92']}],
- crab:[{head:[50,20],t:'50,32 50,56',b:['41,33 59,33','44,57 56,57','41,33 36,44 46,48','59,33 64,44 54,48','37,74 40,90','63,74 60,90'],h:['44,57 37,74','56,57 63,74'],d:['38,71 62,71']},
-       {head:[54,20],t:'54,32 54,56',b:['45,33 63,33','48,57 60,57','45,33 40,44 50,48','63,33 68,44 58,48','37,74 40,90','72,74 75,90'],h:['48,57 37,74','60,57 72,74'],d:['38,71 71,71'],p:['82,50 95,50','91,46 95,50 91,54']}],
- pushup:[{head:[23,56],t:'32,62 59,72',b:['59,72 86,82 88,91'],h:['32,62 32,90']},
-         {head:[18,76],t:'27,80 57,82',b:['57,82 86,84 88,91'],h:['27,80 34,72 32,90']}],
- plank:[{head:[21,65],t:'30,70 58,76',tc:1,b:['58,76 86,83 88,91','30,70 30,90 16,90'],d:['22,54 94,70']}],
- crunch:[{head:[15,84],t:'26,87 54,87',tc:1,b:['54,87 70,66 84,90','26,87 20,77 14,79']},
-         {head:[21,69],t:'30,78 42,86 54,87',tc:1,b:['54,87 70,66 84,90','30,78 25,67 19,68'],p:['34,66 30,58','27,61 30,58 33,60']}],
- legraise:[{head:[12,84],t:'22,87 50,87',tc:1,b:['50,87 88,81','22,89 40,90']},
-           {head:[12,84],t:'22,87 50,87',tc:1,b:['50,87 52,46','22,89 40,90'],p:['66,62 66,48','63,51 66,48 69,51']}],
- pullup:[{nofloor:1,head:[50,38],t:'50,46 50,72',b:['42,46 58,46','45,72 55,72','45,72 45,90','55,72 55,90'],h:['36,20 39,33 42,46','64,20 61,33 58,46'],p:['20,20 80,20']},
-         {nofloor:1,head:[50,10],t:'50,28 50,54',b:['42,28 58,28','45,54 55,54','45,54 45,72','55,54 55,72'],h:['36,20 31,40 42,28','64,20 69,40 58,28'],p:['20,20 80,20']}]
-};
+// 肌肉示意图：只画身体右半边，左半边镜像。F 正面，B 背面
+const SIL='M59 30H65.5L66 37C70 40 78 41 83 43C90 44 95 50 95.5 58C96 68 97 78 98 88C101 98 103 112 104 128C106 134 106 144 102 148C99 150 97 146 97 140L97.5 128C96 114 93 102 90.5 92C88.5 82 86 72 84.5 64C84 76 81 88 80 98C79.5 106 83 112 84.5 122C86 138 84 156 80 172C79.5 178 82 186 81.5 194C81 206 76 214 75 222C75 226 80 230 79 233H66C65 230 67 226 67 222C67 212 64.5 200 65 190C65.2 182 66 178 66 172C66 158 63 140 60.5 129L59 128Z';
+const ARM={delt:'M84 44.5C90 45 94.5 50 94.5 58C94.5 62 93.5 65 92 67.5C89.5 62 86.5 57 84 51Z',
+ fore:'M91.5 93.5C94 92 97 92 98.5 93.5C100.5 102 102 114 102.5 126H98.5C97.5 114 95 102 91.5 93.5Z'};
+const UP='M86 66C89 64 92.5 66 94 70C95.5 76 96 82 96.5 87C94.5 89.5 92.5 90 90.5 89.5C89.5 82 87.5 74 86 66Z';
+const MF={...ARM,bi:UP,
+ chest:'M61 47C68 45 77 45 82 49C84 54 83.5 60 81 65C76 70 67 70 61 67Z',
+ abu:'M61 72H68.5Q70.5 72 70.5 74V79Q70.5 81 68.5 81H61ZM61 83H68.5Q70.5 83 70.5 85V90.5Q70.5 92.5 68.5 92.5H61Z',
+ abl:'M61 94.5H68.5Q70.5 94.5 70.5 96.5V102Q70.5 104 68.5 104H61ZM61 106H70.5C70.5 114 66 122 61 125Z',
+ obl:'M73 73L82.5 71C82 82 79.5 90 79 98C79 104 80 108 82 113L73 106Z',
+ hip:'M72.5 110L83.5 117.5L84 124C78 123 70 126.5 64 131L62 127C67 123 71 117 72.5 110Z',
+ quad:'M66 135C71 129 78 126 84 126.5C85.5 140 83.5 156 80 167C77 170 72 170 68.5 167C68 156 67 145 66 135Z',
+ shin:'M68 177C72 175 77 175 80 177C81 185 81 195 79.5 203C78 210 76.5 216 75 220H68.5C68 210 66 198 66.5 190C66.7 185 67.3 181 68 177Z'};
+const MB={...ARM,tri:UP,
+ trap:'M61 33L65 37C70 40.5 77 42 83 44C78 47 72 49 69 52C66 60 63 68 61 74Z',
+ lat:'M70.5 55C75 57.5 80 61 84 65.5C83.5 76 81 88 79.5 97C74 99 67 100 61 100V78C64 70 67 62 70.5 55Z',
+ low:'M61 102C66 102 73 101 79 99.5C79 104 79.5 107 80.5 110C74 112 67 113 61 113Z',
+ gmed:'M71 114C75 113 79 112 81.5 111.5C83 115 84 119 84.5 123C80 121 75 118 71 114Z',
+ glute:'M61 115C64 115 67 114.5 69.5 114.5C74 119 80 122.5 84.5 125C85.5 131 85 136 84 139C77 143 68 142 61 136Z',
+ ham:'M62.5 140C69 145 78 145 84 142C83.5 152 82 161 80 168C76 170.5 71 170.5 67.5 168C67 158 65 148 62.5 140Z',
+ calf:'M66.5 176C71 174 77 174 80.5 176C82 184 82 192 80 199C77.5 204 70 204 67 199C65 192 65.5 183 66.5 176Z'};
+// 每个内置动作：p 主要发力，s 协同
+const MU={wallsit:{p:['quad'],s:['glute']},calf:{p:['calf']},squat:{p:['quad','glute'],s:['ham']},lunge:{p:['quad','glute'],s:['ham']},bulgarian:{p:['quad','glute'],s:['ham']},
+ crab:{p:['gmed'],s:['glute']},pushup:{p:['chest','tri'],s:['delt','abu','abl']},plank:{p:['abu','abl'],s:['obl']},crunch:{p:['abu']},legraise:{p:['abl','hip'],s:['abu']},pullup:{p:['lat','bi'],s:['fore','trap']}};
+function half(set,m){
+  const one=Object.keys(set).map(k=>`<path class="m${m.p.includes(k)?' p':m.s.includes(k)?' s':''}" d="${set[k]}"/>`).join('');
+  const g=`<path class="sil" d="${SIL}"/>`;
+  return `<ellipse class="sil" cx="60" cy="19" rx="10.5" ry="13"/><g>${g}${one}</g><g transform="translate(120 0) scale(-1 1)">${g}${one}</g>`;
+}
+function muscles(m,cls,label){
+  m={p:(m&&m.p)||[],s:(m&&m.s)||[]};
+  return `<svg class="fig ${cls||''}" viewBox="0 2 220 234" role="img" aria-label="${label||''}"><g transform="translate(-10 0)">${half(MF,m)}</g><g transform="translate(110 0)">${half(MB,m)}</g></svg>`;
+}
+const MUN={chest:'胸',delt:'肩',bi:'手臂前侧',tri:'手臂后侧',fore:'前臂',abu:'上腹',abl:'下腹',obl:'侧腹',hip:'髋前侧',trap:'上背',lat:'后背两侧',low:'腰',glute:'臀',gmed:'臀外侧',quad:'大腿前侧',ham:'大腿后侧',calf:'小腿'};
+const muOf=e=>e&&(e.mu?{p:e.mu}:MU[e.dg])||null;
 const SEED_EX=[{"id":"wallsit","name":"靠墙静蹲","type":"time","unit":"秒","target":45,"tip":"背后像有一把看不见的椅子，坐稳不动","cues":["背靠墙站好，双脚往前走一大步，两脚与髋同宽","后背贴着墙往下滑，滑到大腿和地面平行，像坐在椅子上","低头看一眼：膝盖在脚踝正上方，不超过脚尖，也不往里夹","双手自然垂在身体两侧或抱在胸前，正常呼吸，开始计时"],"feel":"大腿前侧发酸发热。如果是膝盖疼，就往上滑高一点。","bad":["手撑在大腿上 → 手垂在两侧或抱胸，不借力","膝盖往里夹 → 膝盖对准第二个脚趾","憋气硬撑 → 数着呼吸，慢吸慢呼"],"dg":"wallsit"},
  {"id":"calf","name":"单腿地面提踵","type":"reps","unit":"次/侧","target":15,"tip":"2 秒踮起，顶端停 1 秒，3 秒放下","cues":["单脚站立，另一只脚勾在身后，指尖轻轻扶墙保持平衡","前脚掌用力踩地，把脚跟尽量抬高，像踮脚去够高处的东西","在最高点停 1 秒","慢慢放下，用 3 秒，脚跟轻轻碰地就接着做下一个"],"feel":"小腿后侧发紧发酸。","bad":["像弹簧一样快速上下 → 放慢，尤其是放下的过程","只抬到一半 → 每一次都顶到最高","脚踝往外歪 → 把重心压在大脚趾根部","扶墙的手在用力撑 → 只用指尖轻扶"],"dg":"calf"},
  {"id":"squat","name":"自重深蹲","type":"reps","unit":"次","target":15,"tip":"屁股往后找椅子，膝盖跟着脚尖的方向走","cues":["双脚比髋略宽，脚尖稍微朝外，挺胸，双手前伸帮助平衡","先把屁股往后送，再弯膝盖往下坐，像身后有一把矮椅子","蹲到大腿和地面平行；如果脚跟要离地或者腰开始弯，就停在那之前","全脚掌踩地，脚跟发力站起来，屁股和胸口一起升，站直时呼气"],"feel":"大腿前侧和屁股在用力，腰不应该酸。","bad":["膝盖往里夹 → 膝盖始终对着第二个脚趾","脚跟离地 → 重心往后放，或者蹲浅一点","站起时屁股先翘、上身趴下去 → 想着胸口和屁股同时上升","弯腰驼背 → 挺胸，眼睛看正前方"],"dg":"squat"},
@@ -393,20 +440,13 @@ const pad=n=>String(n).padStart(2,'0');
 const mmss=sec=>{sec=Math.max(0,Math.round(sec));return pad(Math.floor(sec/60))+':'+pad(sec%60)};
 const dur=sec=>{const m=Math.round(sec/60);return m<60?m+' 分钟':Math.floor(m/60)+' 小时 '+(m%60)+' 分'};
 const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
-function pose(d,ox){
-  const pl=(a,c)=>(a||[]).map(q=>`<polyline class="${c}" points="${q}"/>`).join('');
-  return `<g transform="translate(${ox} 0)">${d.nofloor?'':'<polyline class="p" points="4,92 96,92"/>'}${pl(d.p,'p')}${pl(d.f,'f')}<polyline class="t${d.tc?' h':''}" points="${d.t}"/>${pl(d.b,'b')}${pl(d.h,'b h')}${pl(d.d,'d')}<circle cx="${d.head[0]}" cy="${d.head[1]}" r="7"/></g>`;
-}
 function fig(ex,cls){
   if(ex&&ex.img)return `<img class="thumb ${cls||''}" src="${ex.img}" alt="">`;
-  const d=ex&&DG[ex.dg];
-  if(!d)return `<svg class="fig ${cls||''}" viewBox="0 0 100 100" style="aspect-ratio:1" aria-hidden="true"><polyline class="p" points="4,92 96,92"/><polyline class="p" points="34,50 66,50"/><polyline class="p" points="50,34 50,66"/></svg>`;
-  const n=d.length,W=n*100+(n-1)*16;
-  return `<svg class="fig ${cls||''}" viewBox="0 0 ${W} 100" style="aspect-ratio:${W}/100" role="img" aria-label="${h(ex.name)}示意图">${d.map((q,k)=>pose(q,k*116)).join('')}${n>1?'<path class="ar" d="M102 50h11m-4-4 4 4-4 4"/>':''}</svg>`;
+  return muscles(muOf(ex),cls,ex?h(ex.name)+'发力部位':'');
 }
 function teachDo(e){ // 做动作时看：步骤，最后用一句话收尾
-  return (e.cues&&e.cues.length?`<h3>怎么做</h3><section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:'')
-    +(e.tip?`<section class="card tipc"><span class="small mute">记住一句话</span><b>${h(e.tip)}</b></section>`:'');
+  return (e.cues&&e.cues.length?`<section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:'')
+    +(e.tip?`<section class="card tipc"><b>${h(e.tip)}</b></section>`:'');
 }
 function teachCheck(e,bare){ // 做完后回想：感觉对不对，有没有犯常见错误
   const bad=(e.bad||[]).map(x=>{const q=String(x).split('→');return `<li>${h(q[0].trim())}${q[1]?`<em>改：${h(q.slice(1).join('→').trim())}</em>`:''}</li>`}).join('');
@@ -472,7 +512,7 @@ function vHome(){
 }
 function vMoves(){
   return `<div class="top"><a href="#prefs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>设置</a><span></span></div><div class="head"><h1>动作与要点</h1><button class="btn sm go" data-act="ex-new">添加动作</button></div>
-  <div class="grid">${S.exercises.map(e=>`<button class="tile" data-act="open-ex" data-id="${e.id}">${fig(e)}<b>${h(e.name)}</b><span class="mute small">目标 ${e.target} ${h(e.unit)}</span></button>`).join('')}</div>`;
+  <div class="grid">${S.exercises.map(e=>`<button class="tile" data-act="open-ex" data-id="${e.id}">${fig(e)}<b>${h(e.name)}</b><span class="mute small">${e.type==='time'?'计时':e.target+' '+h(e.unit)}</span></button>`).join('')}</div>`;
 }
 function stPill(s){const k=(s.strava||{}).state;return k==='done'?'<span class="pill ok">已同步</span>':k==='busy'?'<span class="pill wait">上传中</span>':k==='retry'?'<span class="pill wait">等待重试</span>':k==='error'?'<span class="pill bad">同步失败</span>':'<span class="pill">未同步</span>'}
 function vMe(){
@@ -514,7 +554,7 @@ function vSettings(){
     ${ok?'<button class="btn ghost" data-act="st-off" data-confirm="断开 Strava 连接？|断开连接">断开连接</button>':''}
   </section>`:''}
   <p class="foot">训练结束后，会自动在 Strava 新建一条力量训练，写入每个动作的组数和次数。没网时先存着，下次打开再传。</p>
-  <p class="foot">训练记录只保存在这台手机上。版本 20</p>`;
+  <p class="foot">训练记录只保存在这台手机上。版本 21</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -537,13 +577,13 @@ function shTpl(s){
   if(s.edit)return shHead('编辑项目')+`<div class="body"><label class="f" for="tpl-name">项目名称<input id="tpl-name" type="text" data-f="tpl-name" value="${h(t.name)}"></label>
     <div>${t.items.map((it,i)=>{const e=exById(it.exId);return `<div class="erow"><span class="grow">${h(e?e.name:'已删除的动作')}</span><div class="step"><button data-act="tpl-sets" data-i="${i}" data-d="-1" aria-label="减一组">−</button><span>${it.sets}</span><button data-act="tpl-sets" data-i="${i}" data-d="1" aria-label="加一组">+</button></div><button class="btn sm" data-act="tpl-up" data-i="${i}" ${i?'':'disabled'} aria-label="上移">↑</button><button class="btn sm" data-act="tpl-rm" data-i="${i}" aria-label="移除">✕</button></div>`}).join('')}</div>
     <button class="btn ghost" data-act="tpl-add">添加动作</button><button class="btn ghost" data-act="tpl-del" data-confirm="删除这个项目？|删除项目">删除项目</button></div><footer><button class="btn go" data-act="tpl-edit">完成</button></footer>`;
-  return shHead(h(t.name))+`<div class="body"><div class="grid">${t.items.map((it,i)=>{const e=exById(it.exId);return e?`<button class="tile" data-act="open-ex" data-id="${e.id}" data-back="${t.id}"><span class="no">${i+1}</span>${fig(e)}<b>${h(e.name)}</b><span class="mute small">${it.sets} 组 × ${e.target} ${h(e.unit)}</span></button>`:''}).join('')}</div></div>
+  return shHead(h(t.name))+`<div class="body"><div class="grid">${t.items.map((it,i)=>{const e=exById(it.exId);return e?`<button class="tile" data-act="open-ex" data-id="${e.id}" data-back="${t.id}"><span class="no">${i+1}</span>${fig(e)}<b>${h(e.name)}</b><span class="mute small">${it.sets} 组${e.type==='time'?'':' × '+e.target+' '+h(e.unit)}</span></button>`:''}).join('')}</div></div>
   <footer><button class="btn" data-act="tpl-edit">编辑项目</button><button class="btn go" data-act="start" data-id="${t.id}">开始训练</button></footer>`;
 }
 function shEx(s){
   const e=exById(s.id);if(!e)return shHead('动作不存在');
   return shHead(h(e.name),s.back?`<button class="btn sm" data-act="open-tpl" data-id="${s.back}">返回</button>`:'')+`<div class="body">${fig(e,'figbig')}
-    <p class="mute small" style="text-align:center">每组目标 ${e.target} ${h(e.unit)}${DG[e.dg]&&!e.img?'，橙色是主要发力的部位':''}</p>
+    ${e.type==='time'?'':`<p class="mute small" style="text-align:center">每组目标 ${e.target} ${h(e.unit)}</p>`}
     ${teach(e)||'<p class="mute">还没有填写教学内容。</p>'}</div>
     <footer><button class="btn" data-act="ex-edit" data-id="${e.id}">编辑</button><button class="btn go" data-act="close">知道了</button></footer>`;
 }
@@ -552,13 +592,14 @@ function shExEdit(s){
   const units=['次','次/侧','步','步/向','秒','秒/侧'];
   return shHead(s.id?'编辑动作':'添加动作')+`<div class="body">
     <label class="f" for="e-name">名称<input id="e-name" type="text" value="${h(e.name)}" placeholder="例如：臀桥"></label>
-    <div class="two"><label class="f" for="e-unit">计量单位<select id="e-unit">${units.map(u=>`<option ${u===e.unit?'selected':''}>${u}</option>`).join('')}</select></label><label class="f" for="e-target">每组目标<input id="e-target" type="number" inputmode="numeric" value="${e.target}"></label></div>
+    <div class="two"><label class="f" for="e-unit">计量单位<select id="e-unit" onchange="document.getElementById('e-tg').hidden=this.value[0]==='秒'">${units.map(u=>`<option ${u===e.unit?'selected':''}>${u}</option>`).join('')}</select></label><label class="f" id="e-tg" for="e-target" ${e.type==='time'?'hidden':''}>每组目标<input id="e-target" type="number" inputmode="numeric" value="${e.target}"></label></div>
     <label class="row" for="e-w"><input id="e-w" type="checkbox" ${e.weighted?'checked':''}><span>这个动作要记录负重（kg）</span></label>
     <label class="f" for="e-tip">一句话口诀<input id="e-tip" type="text" value="${h(e.tip||'')}"></label>
     <label class="f" for="e-cues">动作步骤，每行一步<textarea id="e-cues">${h((e.cues||[]).join('\n'))}</textarea></label>
     <label class="f" for="e-feel">做对了的感觉<input id="e-feel" type="text" value="${h(e.feel||'')}"></label>
     <label class="f" for="e-bad">常见错误，每行一条，写成“错误 → 改法”<textarea id="e-bad">${h((e.bad||[]).join('\n'))}</textarea></label>
-    <label class="f" for="e-img">示意图片（可选，用你自己的照片替换简笔图）<input id="e-img" type="file" accept="image/*"></label>
+    <section class="f">发力部位<div class="mups">${Object.keys(MUN).map(k=>`<button type="button" class="${((muOf(e)||{}).p||[]).includes(k)?'on':''}" data-act="mu-tog" data-k="${k}">${MUN[k]}</button>`).join('')}</div></section>
+    <label class="f" for="e-img">示意图片（可选，用你自己的照片替换肌肉图）<input id="e-img" type="file" accept="image/*"></label>
     ${e.img?'<button class="btn sm ghost" data-act="ex-noimg" data-id="'+s.id+'">移除当前图片</button>':''}
     ${s.id?'<button class="btn ghost" data-act="ex-del" data-id="'+s.id+'" data-confirm="删除这个动作？|删除动作">删除动作</button>':''}
     </div><footer><button class="btn" data-act="close">取消</button><button class="btn go" data-act="ex-save" data-id="${s.id||''}">保存</button></footer>`;
@@ -599,7 +640,7 @@ function renderRest(el,a){ // 做完一组后的整屏休息：大倒计时，�
     ${teachCheck(e,true)}
   </div>
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':'<button class="btn go lg wide" data-act="t-skip">跳过休息</button>'}</footer></div>`;
-  paintTick();
+  fitWk();paintTick();
 }
 function renderHold(el,a){ // 计时动作的整屏计时：先 5 秒准备，再正计时；下面是怎么做和一句话
   const it=a.items[T.i],e=exById(it.exId)||{},C=2*Math.PI*112,prep=(a.pAt||Date.now())<T.start;
@@ -607,11 +648,11 @@ function renderHold(el,a){ // 计时动作的整屏计时：先 5 秒准备，�
     <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="结束这次训练？|结束训练">结束</button></div></header>
   <div class="list">
     <div class="restbox${prep?' prep':''}"><svg viewBox="0 0 260 260" aria-hidden="true"><circle class="trk" cx="130" cy="130" r="112"/><circle class="arc" id="rarc" cx="130" cy="130" r="112" transform="rotate(-90 130 130)" stroke-dasharray="0 ${C}"/></svg>
-      <div class="restnum"><span class="big num" id="tt"></span><span class="unit">${prep?'准备':'目标 '+it.target+' 秒'+(it.last&&it.last[T.j]!=null?' · 上次 '+h(it.last[T.j])+' 秒':'')}</span></div></div>
+      <div class="restnum"><span class="big num" id="tt"></span><span class="unit">${prep?'准备':it.last&&it.last[T.j]!=null?'上次 '+h(it.last[T.j])+' 秒':''}</span></div></div>
     ${teachDo(e)}
   </div>
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':prep?'<button class="btn lg wide" data-act="t-stop">取消</button>':'<button class="btn stop lg wide" data-act="t-stop">停止并完成</button>'}</footer></div>`;
-  paintTick();
+  fitWk();paintTick();
 }
 function renderWk(){
   const el=$('#wk'),a=S.active,on=!!(a&&ui.wk),prev=ui.pw||'',pl=el.querySelector('.list'),top=pl?pl.scrollTop:0;
@@ -634,42 +675,42 @@ function drawWk(){
   const it=curItem(),i=a.cur,n=a.items.length,j=it.sets.findIndex(x=>!x.done),e=exById(it.exId)||{};
   const ed=a.ed!=null&&it.sets[a.ed]&&it.sets[a.ed].done?a.ed:null;   // 正在回头修改的那一组
   const tot=a.items.reduce((m,x)=>m+x.sets.length,0),dn=a.items.reduce((m,x)=>m+x.sets.filter(y=>y.done).length,0),fin=allDone();
-  const stepper=k=>`<div class="stepper"><button data-act="bump" data-d="-1" aria-label="减一">−</button><input id="v-${i}-${k}" class="big num" type="number" inputmode="numeric" data-f="set" data-i="${i}" data-j="${k}" value="${h(it.sets[k].val)}" aria-label="本组数量"><button data-act="bump" data-d="1" aria-label="加一">+</button></div><div class="unit">${h(it.unit)}${ed!=null?' · 修改第 '+(k+1)+' 组':''}</div>`;
+  const stepper=k=>`<div class="stepper"><button data-act="bump" data-d="-1" aria-label="减一">−</button><input id="v-${i}-${k}" class="big num" type="number" inputmode="numeric" data-f="set" data-i="${i}" data-j="${k}" value="${h(it.sets[k].val)}" aria-label="本组数量"><button data-act="bump" data-d="1" aria-label="加一">+</button></div><div class="unit">${h(it.unit)}</div>`;
   let main,btn;
   if(ed!=null){main=stepper(ed);btn='<button class="btn go lg wide" data-act="ed-done">改好了</button>'}
   else if(fin){main='<div class="big num">'+dn+'</div><div class="unit">组，全部完成</div>';btn='<button class="btn go lg wide" data-act="w-end">结束训练</button>'}
   else if(j<0){main='<div class="big num">'+it.sets.length+'</div><div class="unit">组，已完成</div>';btn='<button class="btn go lg wide" data-act="w-nextopen">去下一个没做完的动作</button>'}
-  else if(it.type==='time'){main=`<div class="big num">00:00</div><div class="unit">目标 ${it.target} 秒</div>`;btn=`<button class="btn go lg wide" data-act="hold" data-i="${i}" data-j="${j}">开始计时</button>`}
+  else if(it.type==='time'){main=`<div class="big num">00:00</div>`;btn=`<button class="btn go lg wide" data-act="hold" data-i="${i}" data-j="${j}">开始计时</button>`}
   else{main=stepper(j);btn=`<button class="btn go lg wide" data-act="chk" data-i="${i}" data-j="${j}">完成第 ${j+1} 组</button>`}
   const vj=ed!=null?ed:j;
   const kg=it.weighted&&vj>=0?`<label class="kg" for="w-${i}-${vj}">负重<input id="w-${i}-${vj}" type="number" inputmode="decimal" data-f="setw" data-i="${i}" data-j="${vj}" value="${h(it.sets[vj].w||'')}">kg</label>`:'';
-  const chips=it.sets.map((x,k)=>`<button class="chip${x.done?' on':''}${k===vj?' cur':''}" data-act="ed" data-j="${k}" ${x.done||k===j?'':'disabled'} aria-label="第 ${k+1} 组${x.done?'，已完成 '+x.val+'，点按修改':''}">${x.done?h(x.val):k+1}</button>`).join('');
+  const chips=it.sets.map((x,k)=>{const l=it.last&&it.last[k]!=null?it.last[k]:null;return `<button class="chip${x.done?' on':''}${k===vj?' cur':''}" data-act="ed" data-j="${k}" ${x.done||k===j?'':'disabled'} aria-label="第 ${k+1} 组${x.done?'，已完成 '+x.val+'，点按修改':''}${l!=null?'，上次 '+l:''}"><b>${x.done?h(x.val):k+1}</b>${l!=null?`<small>上次 ${h(l)}</small>`:''}</button>`}).join('');
   el.innerHTML=`<div class="wk"><header class="bar"><span class="clock num" id="clock">00:00</span>
     <div class="pager"><button data-act="w-go" data-d="-1" ${i?'':'disabled'} aria-label="上一个动作"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><span>${i+1} / ${n}</span><button data-act="w-go" data-d="1" ${i<n-1?'':'disabled'} aria-label="下一个动作"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
     <div class="r"><button data-act="w-pause" data-hold="w-askdrop" aria-label="${a.pAt?'继续训练':'暂停，长按可放弃训练'}">${a.pAt?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>`:`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6v12M15 6v12" stroke-width="2.8"/></svg>`}</button><button data-act="w-finish" data-confirm="结束这次训练？|结束训练">结束</button></div></header>
   <div class="prog"><i style="width:${tot?dn/tot*100:0}%"></i></div>
   <div class="list">
     <div class="xhead"><h1>${h(it.name)}</h1>${a.pAt?'<span class="pill wait">已暂停</span>':''}</div>
-    <div class="chips">${chips}</div>
-    ${it.last&&it.last.length?`<p class="last">上次 <span class="num">${it.last.map(h).join(' · ')}</span> ${h(it.unit)}</p>`:''}
-    <section class="card hero">${fig(e)}<div class="heromain">${main}${kg}</div></section>
+    <section class="card hero"><div class="chips">${chips}</div><div class="heromain">${fig(e)}${main}${kg}${ed!=null?'<div class="links"><button data-act="ed-undo">标为没做</button></div>':''}</div></section>
     ${teachDo(e)}
-    ${ed!=null?'<div class="links"><button data-act="ed-undo">把这一组标为没做</button></div>':''}
   </div>
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':btn}</footer></div>`;
-  paintTick();
+  fitWk();paintTick();
 }
 const elapsed=a=>((a.pAt||Date.now())-a.start-(a.pz||0))/1000;
+function fitWk(){ // 一屏放下：图和圆环先让出高度，还放不下就把文字整体缩一点
+  const l=$('#wk .list');if(!l)return;let k=1;l.style.setProperty('--k',k);
+  while(l.scrollHeight>l.clientHeight+1&&k>.66){k-=.03;l.style.setProperty('--k',k.toFixed(2))}
+}
 function paintTick(){
   const a=S.active;if(!a||!ui.wk)return;
   const now=a.pAt||Date.now(),c=$('#clock');if(c)c.textContent=mmss(elapsed(a));
   if(T&&T.kind==='hold'){
-    const sec=(now-T.start)/1000,t=$('#tt'),r=$('#rarc'),C=2*Math.PI*112,tg=(a.items[T.i]&&a.items[T.i].target)||1;
+    const sec=(now-T.start)/1000,t=$('#tt'),r=$('#rarc'),C=2*Math.PI*112;
     if(sec<0){const n=Math.ceil(-sec);if(T.n!==n&&!a.pAt){T.n=n;tickS()}if(t)t.textContent=n;if(r)r.setAttribute('stroke-dasharray',C*Math.min(1,-sec/5)+' '+C)}
     else{
       if(!T.go){T.go=true;beep();renderWk();return}
-      if(t)t.textContent=mmss(sec);if(r)r.setAttribute('stroke-dasharray',C*Math.min(1,sec/tg)+' '+C);
-      if(!T.hit&&sec>=tg){T.hit=true;beep2()}
+      if(t)t.textContent=mmss(sec);if(r)r.setAttribute('stroke-dasharray',C*(sec>=60&&sec%60<.3?1:sec%60/60)+' '+C); // 没有目标秒数，圆环每分钟走一圈
     }
   }
   if(T&&T.kind==='rest'){const left=(T.end-now)/1000;
@@ -780,6 +821,7 @@ const A={
   'ex-noimg'(b){delete exById(b.dataset.id).img;save()},
   'ex-del'(b){const id=b.dataset.id;S.exercises=S.exercises.filter(e=>e.id!==id);S.templates.forEach(t=>t.items=t.items.filter(i=>i.exId!==id));save();ui.sheet=null},
   'ex-save'(b){saveEx(b.dataset.id);return false},
+  'mu-tog'(b){b.classList.toggle('on');return false},
 
   chk(b){prime();haptic();const it=S.active.items[+b.dataset.i],st=it.sets[+b.dataset.j];st.val=Math.max(0,+st.val||0)||it.target;st.done=true;advance();if(allDone())T=null;else startRest(+b.dataset.i);save()},
   bump(b){const a=S.active,it=curItem(),st=a.ed!=null&&it.sets[a.ed]?it.sets[a.ed]:it.sets.find(x=>!x.done);if(st){st.val=Math.max(1,(+st.val||0)+ +b.dataset.d);save()}},
@@ -814,6 +856,8 @@ function saveEx(id){
   const unit=$('#e-unit').value,lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean);
   const data={name,unit,type:unit.indexOf('秒')===0?'time':'reps',target:Math.max(1,+$('#e-target').value||1),weighted:$('#e-w').checked,cues:lines($('#e-cues').value),bad:lines($('#e-bad').value),tip:$('#e-tip').value.trim(),feel:$('#e-feel').value.trim()};
   let e=id&&exById(id);if(e)Object.assign(e,data);else{e={id:uid(),...data};S.exercises.push(e)}
+  const mu=[...document.querySelectorAll('.mups .on')].map(x=>x.dataset.k),was=((muOf(e)||{}).p||[]).join();
+  if(mu.join()!==was){if(mu.length)e.mu=mu;else{delete e.mu;delete e.dg}}
   const f=$('#e-img').files[0],fin=()=>{if(!save()){delete e.img;save()}ui.sheet={t:'ex',id:e.id};render()};
   if(!f)return fin();
   const img=new Image(),url=URL.createObjectURL(f);
@@ -882,7 +926,7 @@ function fitH(){ // iPhone 桌面图标模式下系统给的初始高度偏短�
   const a=Math.max(screen.height,screen.width),b=Math.min(screen.height,screen.width),port=matchMedia('(orientation:portrait)').matches;
   document.documentElement.style.setProperty('--H',Math.max(innerHeight,port?a:b)+'px');
 }
-fitH();addEventListener('resize',fitH);addEventListener('orientationchange',()=>setTimeout(fitH,300));setTimeout(()=>{fitH();try{scrollTo(0,0)}catch(e){}},300);
+fitH();addEventListener('resize',()=>{fitH();fitWk()});addEventListener('orientationchange',()=>setTimeout(fitH,300));setTimeout(()=>{fitH();try{scrollTo(0,0)}catch(e){}},300);
 if((S.v||1)<3){ // 第 3 版：内置动作换成新的教学内容
   SEED_EX.forEach(n=>{const e=exById(n.id);if(e){e.tip=n.tip;e.cues=n.cues.slice();e.feel=n.feel;e.bad=n.bad.slice();e.dg=n.dg}});S.v=3;save();
 }

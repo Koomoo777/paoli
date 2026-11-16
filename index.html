@@ -393,6 +393,41 @@ body:has(#wk.on) .bear,body:has(#sheet.on) .bear{animation-play-state:paused}
 .page[data-r="home"] .pgdots .add{background:none;color:color-mix(in srgb,var(--h-ink) 35%,transparent)}
 .page[data-r="home"] .pgdots .add.on{background:none;color:var(--h-ink)}
 @media (prefers-reduced-motion:reduce){.bear{animation:none}}
+/* ===== 第 23 版：姿势小人；训练页用主页同一套配色和粗描边 ===== */
+.pz .ol *{fill:var(--ink);stroke:var(--ink);stroke-width:3;stroke-linejoin:round}
+.pz .bd *{fill:color-mix(in srgb,var(--ink) 14%,var(--panel))}
+.pz .bf *{fill:color-mix(in srgb,var(--ink) 34%,var(--panel))}
+.pz .ol .tor{stroke-width:7}.pz .bd .tor{stroke:color-mix(in srgb,var(--ink) 14%,var(--panel));stroke-width:4;stroke-linejoin:round}
+.pz .mp *{fill:var(--hot)}.pz .ms *{fill:color-mix(in srgb,var(--hot) 45%,var(--panel))}
+.pz .pp{fill:none;stroke:var(--mute);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.pz .band{fill:none;stroke:var(--hot);stroke-width:2.6;stroke-dasharray:1 5;stroke-linecap:round}
+.tile .pz{width:100%;height:auto;max-height:96px}
+.pz.figbig{width:100%;height:auto;max-height:190px}
+.figmap{height:150px}
+:root{--h-card:#fff6e1;--h-mute:#6c648c;--h-cream2:#ffe7b0;--h-line:#2a2140;--h-tint:#1c8a3e;--h-pink:#ffc9d1}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--h-card:#2d2a57;--h-mute:#b3acd4;--h-cream2:#403b74;--h-line:#0f0d22;--h-tint:#5fe08a;--h-pink:#5a2f57}}
+#wk{--bg:var(--h-bg);--panel:var(--h-card);--ink:var(--h-ink);--mute:var(--h-mute);--panel2:var(--h-cream2);--tint:var(--h-tint);--on-accent:#2a2140;color:var(--h-ink)}
+#wk.on{background:radial-gradient(circle at 50% 0,color-mix(in srgb,var(--h-glow) 60%,transparent) 0,transparent 55%),var(--h-bg)}
+#wk.on::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.2;mix-blend-mode:soft-light;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.wk .card{border:2.5px solid var(--h-line)}
+.wk .tipc{background:var(--h-pink)}
+.xhead h1{font-family:var(--round);font-weight:800;letter-spacing:.02em}
+.bar .clock{color:var(--h-ink);opacity:.7}
+.wk .pager{color:var(--h-ink)}.wk .pager button{color:var(--h-ink)}
+.wk .bar .r{background:var(--h-cream2);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border:2.5px solid var(--h-line);padding:0 4px}
+.wk .bar .r button{min-height:36px;color:var(--h-ink)}
+.wk .prog{height:5px;background:color-mix(in srgb,var(--h-card) 60%,transparent)}.wk .prog i{background:var(--h-ink)}
+.hero .chip{border:2.5px solid transparent;color:var(--h-mute)}
+.hero .chip.cur{box-shadow:none;border-color:var(--h-line);background:var(--h-cream2);color:var(--h-ink)}
+.hero .chip.on{background:color-mix(in srgb,var(--accent) 30%,var(--h-card));color:var(--h-ink)}
+.wk .stepper button{background:var(--h-cream2);border:2.5px solid var(--h-line);color:var(--h-ink)}
+.wk footer{background:linear-gradient(to top,var(--h-bg) 58%,transparent);padding-bottom:calc(16px + env(safe-area-inset-bottom))}
+.wk footer .btn,.wk footer .btn.go{border:2.5px solid var(--h-line);box-shadow:0 4px 0 var(--h-line);font-family:var(--round);font-weight:700;transition:transform .08s,box-shadow .08s}
+.wk footer .btn:active{opacity:1;transform:translateY(3px);box-shadow:0 1px 0 var(--h-line)}
+.wk .restbox .trk{stroke:var(--h-card)}
+.wk .btn.tint{background:var(--h-cream2);color:var(--h-ink);border:2.5px solid var(--h-line)}
+.wk .list{padding-bottom:calc(env(safe-area-inset-bottom) + 86px)}
+.wk .bar .r [data-act="w-finish"]{color:var(--red)}
 </style>
 </head>
 <body>
@@ -440,6 +475,87 @@ function muscles(m,cls,label){
 }
 const MUN={chest:'胸',delt:'肩',bi:'手臂前侧',tri:'手臂后侧',fore:'前臂',abu:'上腹',abl:'下腹',obl:'侧腹',hip:'髋前侧',trap:'上背',lat:'后背两侧',low:'腰',glute:'臀',gmed:'臀外侧',quad:'大腿前侧',ham:'大腿后侧',calf:'小腿'};
 const muOf=e=>e&&(e.mu?{p:e.mu}:MU[e.dg])||null;
+// 姿势图：有体积的小人，起始和终点两个姿势，发力的肌肉直接涂在身上。
+// 侧面：hd 头，sh 肩，hp 髋，leg/far 近侧和远侧腿 [膝,踝,脚尖]，arm [肘,手]，fl=-1 表示身体正面朝另一侧，pr 道具线
+// 正面（v:1）：sh、hp 各两个点，legs、arms 各两条
+const BENCH='8,93 8,70 26,70 26,93';
+const PZ={
+ wallsit:[{hd:[31,22],sh:[27,33],hp:[28,62],leg:[[49,62],[49,89],[58,91]],arm:[[30,48],[40,55]],pr:['19.5,6 19.5,93']}],
+ calf:[{hd:[50,11],sh:[50,22],hp:[50,50],far:[[55,69],[45,79],[46,85]],leg:[[50,70],[50,89],[59,91]],arm:[[62,36],[78,32]],pr:['81,8 81,93']},
+       {hd:[50,4],sh:[50,15],hp:[50,43],far:[[55,62],[45,72],[46,78]],leg:[[50,63],[50,82],[57,91]],arm:[[62,29],[78,26]],pr:['81,8 81,93','36,90 36,77','33,80 36,77 39,80']}],
+ squat:[{hd:[50,11],sh:[50,22],hp:[50,50],leg:[[50,70],[50,89],[59,91]],arm:[[62,28],[74,28]]},
+        {hd:[60,34],sh:[55,45],hp:[40,67],leg:[[62,66],[55,89],[64,91]],arm:[[67,47],[79,45]]}],
+ lunge:[{hd:[50,11],sh:[50,22],hp:[50,50],leg:[[50,70],[50,89],[59,91]],arm:[[57,36],[53,47]]},
+        {hd:[48,25],sh:[48,36],hp:[48,64],far:[[46,85],[30,82],[27,91]],leg:[[67,68],[67,89],[76,91]],arm:[[55,50],[51,60]]}],
+ bulgarian:[{hd:[55,11],sh:[54,22],hp:[52,50],far:[[40,69],[25,66],[20,67]],leg:[[62,71],[62,89],[71,91]],arm:[[61,36],[56,46]],pr:[BENCH]},
+            {hd:[60,27],sh:[56,38],hp:[50,64],far:[[39,83],[25,66],[20,67]],leg:[[67,68],[64,89],[73,91]],arm:[[63,52],[57,60]],pr:[BENCH]}],
+ pushup:[{fl:-1,hd:[22,55],sh:[32,62],hp:[59,71],leg:[[73,77],[86,83],[88,91]],arm:[[32,76],[32,89]]},
+         {fl:-1,hd:[17,76],sh:[27,81],hp:[57,83],leg:[[72,84],[86,85],[88,91]],arm:[[37,72],[32,89]]}],
+ plank:[{fl:-1,hd:[20,65],sh:[30,71],hp:[58,76],leg:[[72,80],[86,84],[88,91]],arm:[[31,88],[17,89]]}],
+ crunch:[{hd:[14,84],sh:[25,85],hp:[54,85],leg:[[70,66],[83,88],[92,90]],arm:[[20,76],[13,78]]},
+         {hd:[20,68],sh:[30,76],hp:[54,85],leg:[[70,66],[83,88],[92,90]],arm:[[25,66],[18,66]],pr:['34,64 30,55','27,58 30,55 33,57']}],
+ legraise:[{hd:[11,84],sh:[22,85],hp:[50,85],leg:[[69,83],[87,81],[89,75]],arm:[[32,88],[42,90]]},
+           {hd:[11,84],sh:[22,85],hp:[50,85],leg:[[51,65],[52,47],[58,45]],arm:[[32,88],[42,90]],pr:['68,62 68,48','65,51 68,48 71,51']}],
+ crab:[{v:1,hd:[50,19],sh:[[41,33],[59,33]],hp:[[44,56],[56,56]],legs:[[[37,73],[39,89]],[[63,73],[61,89]]],arms:[[[35,44],[45,50]],[[65,44],[55,50]]],band:'38,70 62,70'},
+       {v:1,hd:[54,19],sh:[[45,33],[63,33]],hp:[[48,56],[60,56]],legs:[[[38,73],[39,89]],[[71,73],[74,89]]],arms:[[[39,44],[49,50]],[[69,44],[59,50]]],band:'39,70 70,70',pr:['84,50 96,50','92,46 96,50 92,54']}],
+ pullup:[{v:1,nofloor:1,hd:[50,37],sh:[[42,47],[58,47]],hp:[[45,72],[55,72]],legs:[[[45,82],[45,92]],[[55,82],[55,92]]],arms:[[[39,33],[36,20]],[[61,33],[64,20]]],pr:['18,20 82,20']},
+         {v:1,nofloor:1,hd:[50,11],sh:[[42,29],[58,29]],hp:[[45,54],[55,54]],legs:[[[45,64],[45,74]],[[55,64],[55,74]]],arms:[[[31,40],[36,20]],[[69,40],[64,20]]],pr:['18,20 82,20']}]
+};
+const r1=n=>Math.round(n*10)/10,mix=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+function cap(a,b,wa,wb){ // 两端粗细不同的圆头肢体
+  const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,nx=-dy/l,ny=dx/l,ra=wa/2,rb=wb/2;
+  return `<path d="M${r1(a[0]+nx*ra)} ${r1(a[1]+ny*ra)}L${r1(b[0]+nx*rb)} ${r1(b[1]+ny*rb)}A${rb} ${rb} 0 0 0 ${r1(b[0]-nx*rb)} ${r1(b[1]-ny*rb)}L${r1(a[0]-nx*ra)} ${r1(a[1]-ny*ra)}A${ra} ${ra} 0 0 0 ${r1(a[0]+nx*ra)} ${r1(a[1]+ny*ra)}Z"/>`;
+}
+const dot=(c,r)=>`<circle cx="${r1(c[0])}" cy="${r1(c[1])}" r="${r}"/>`;
+function strip(a,b,t0,t1,side,wa,wb,fl){ // 肢体上的一条肌肉：side 1 在身体正面一侧，-1 背面，0 居中
+  const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1,fx=dy/l*fl*side,fy=-dx/l*fl*side,w=t=>wa+(wb-wa)*t;
+  const p=t=>{const q=mix(a,b,t),o=w(t)*(side?.21:0);return[q[0]+fx*o,q[1]+fy*o]};
+  return cap(p(t0),p(t1),w(t0)*(side?.5:.62),w(t1)*(side?.5:.62));
+}
+const shp=(sh,cls)=>`<g class="ol">${sh}</g><g class="${cls}">${sh}</g>`;
+function limb(o,k,e,w){return cap(o,k,w[0],w[1])+cap(k,e,w[1],w[2])}
+const PLEG=[11,8.4,5.2],PARM=[6.6,5.6,4.6];
+function sidePose(d,m){
+  const fl=d.fl||1,on=k=>m.p.includes(k)?'mp':m.s.includes(k)?'ms':'',g=(k,s)=>on(k)?`<g class="${on(k)}">${s}</g>`:'';
+  const sh=d.sh,hp=d.hp,tl=Math.hypot(hp[0]-sh[0],hp[1]-sh[1])||1,fx=(hp[1]-sh[1])/tl*fl,fy=-(hp[0]-sh[0])/tl*fl; // 身体正面的方向
+  const leg=L=>limb(hp,L[0],L[1],PLEG)+cap(L[1],L[2],5,4);
+  const as=mix(sh,hp,.1),arm=limb(as,d.arm[0],d.arm[1],PARM)+dot(d.arm[1],2.9);
+  const butt=[hp[0]-fx*2.4,hp[1]-fy*2.4],L=d.leg;
+  let o=d.far?shp(leg(d.far),'bf'):'';
+  o+=shp(leg(L)+dot(butt,6.3)+cap(sh,hp,14,13)+cap(sh,mix(sh,d.hd,.7),6,6)+dot(d.hd,7.6),'bd');
+  o+=g('glute',dot([butt[0]-fx*.6,butt[1]-fy*.6],5))+g('gmed',dot(mix(hp,sh,.1),3.6))+g('hip',dot([hp[0]+fx*3,hp[1]+fy*3],3.2));
+  o+=g('quad',strip(hp,L[0],.14,.92,1,PLEG[0],PLEG[1],fl))+g('ham',strip(hp,L[0],.2,.9,-1,PLEG[0],PLEG[1],fl))+g('calf',strip(L[0],L[1],.06,.62,-1,PLEG[1]+1.5,PLEG[2],fl));
+  o+=g('chest',strip(sh,hp,.14,.44,1,14,13,fl))+g('abu',strip(sh,hp,.48,.66,1,14,13,fl))+g('abl',strip(sh,hp,.7,.92,1,14,13,fl))+g('obl',strip(sh,hp,.5,.84,0,7,7,fl));
+  o+=g('trap',strip(sh,hp,.02,.2,-1,14,13,fl))+g('lat',strip(sh,hp,.24,.6,-1,14,13,fl))+g('low',strip(sh,hp,.68,.9,-1,14,13,fl));
+  o+=shp(arm,'bd')+g('delt',dot(as,3.1))+g('bi',strip(as,d.arm[0],.2,.9,1,PARM[0],PARM[1],fl))+g('tri',strip(as,d.arm[0],.2,.9,-1,PARM[0],PARM[1],fl))+g('fore',strip(d.arm[0],d.arm[1],.1,.85,0,PARM[1],PARM[2],fl));
+  return o;
+}
+function frontPose(d,m){
+  const on=k=>m.p.includes(k)?'mp':m.s.includes(k)?'ms':'',g=(k,s)=>on(k)?`<g class="${on(k)}">${s}</g>`:'';
+  const [s1,s2]=d.sh,[h1,h2]=d.hp,cx=(s1[0]+s2[0])/2,pt=p=>r1(p[0])+' '+r1(p[1]);
+  const torso=`<path class="tor" d="M${pt(s1)}L${pt(s2)}L${pt(h2)}L${pt(h1)}Z"/>`;
+  const legs=d.legs.map((L,i)=>limb(d.hp[i],L[0],L[1],PLEG)+cap(L[1],[L[1][0]+(i?3:-3),L[1][1]+2.5],5,4)).join('');
+  const arms=d.arms.map((A,i)=>limb(d.sh[i],A[0],A[1],PARM)+dot(A[1],2.9)).join('');
+  let o=shp(legs+torso+cap([cx,s1[1]],mix([cx,s1[1]],d.hd,.7),6,6)+dot(d.hd,7.6),'bd');
+  o+=g('gmed',dot([h1[0]-1.5,h1[1]+1],4.3)+dot([h2[0]+1.5,h2[1]+1],4.3))+g('quad',d.legs.map((L,i)=>strip(d.hp[i],L[0],.25,.9,0,PLEG[0],PLEG[1],1)).join(''));
+  o+=g('lat',[[s1,h1,1],[s2,h2,-1]].map(([s,hh,k])=>`<path d="M${r1(s[0]-k*1.5)} ${r1(s[1]+3)}L${r1(cx-k*1.2)} ${r1(s[1]+9)}L${r1(cx-k*1.2)} ${r1(hh[1]-7)}L${r1(hh[0]-k*.5)} ${r1(hh[1]-9)}Z"/>`).join(''));
+  o+=g('trap',`<path d="M${r1(cx)} ${r1(s1[1]-2)}L${r1(cx+6)} ${r1(s1[1]+1.5)}L${r1(cx)} ${r1(s1[1]+8)}L${r1(cx-6)} ${r1(s1[1]+1.5)}Z"/>`);
+  o+=shp(arms,'bd')+g('delt',dot(s1,3.1)+dot(s2,3.1))+g('bi',d.arms.map((A,i)=>strip(d.sh[i],A[0],.2,.9,0,PARM[0],PARM[1],1)).join(''))+g('tri',d.arms.map((A,i)=>strip(d.sh[i],A[0],.2,.9,0,PARM[0],PARM[1],1)).join(''))+g('fore',d.arms.map(A=>strip(A[0],A[1],.1,.85,0,PARM[1],PARM[2],1)).join(''));
+  if(d.band)o+=`<polyline class="band" points="${d.band}"/>`;
+  return o;
+}
+function poses(key,m,cls,label){ // 每个姿势按实际占的宽度裁掉两边空白，图才画得大
+  const d=PZ[key];m={p:(m&&m.p)||[],s:(m&&m.s)||[]};let x=0,top=99,out='';
+  d.forEach((q,k)=>{
+    const P=[q.hd].concat(q.v?[...q.sh,...q.hp,...q.legs.flat(),...q.arms.flat()]:[q.sh,q.hp,...q.leg,...(q.far||[]),...q.arm]);
+    (q.pr||[]).forEach(t=>t.split(' ').forEach(c=>P.push(c.split(',').map(Number))));
+    const xs=P.map(c=>c[0]),a=Math.min(...xs)-11,b=Math.max(...xs)+11;top=Math.min(top,...P.map(c=>c[1]));
+    if(k){out+=`<path class="pp" d="M${x+3} 52h10m-4-4 4 4-4 4"/>`;x+=16}
+    out+=`<g transform="translate(${r1(x-a)} 0)">${q.nofloor?'':`<polyline class="pp" points="${a+2},93.6 ${b-2},93.6"/>`}${(q.pr||[]).map(t=>`<polyline class="pp" points="${t}"/>`).join('')}${(q.v?frontPose:sidePose)(q,m)}</g>`;x+=b-a;
+  });
+  top=Math.floor(top-11);
+  return `<svg class="fig pz ${cls||''}" viewBox="0 ${top} ${r1(x)} ${97-top}" role="img" aria-label="${label||''}">${out}</svg>`;
+}
 const SEED_EX=[{"id":"wallsit","name":"靠墙静蹲","type":"time","unit":"秒","target":45,"tip":"背后像有一把看不见的椅子，坐稳不动","cues":["背靠墙站好，双脚往前走一大步，两脚与髋同宽","后背贴着墙往下滑，滑到大腿和地面平行，像坐在椅子上","低头看一眼：膝盖在脚踝正上方，不超过脚尖，也不往里夹","双手自然垂在身体两侧或抱在胸前，正常呼吸，开始计时"],"feel":"大腿前侧发酸发热。如果是膝盖疼，就往上滑高一点。","bad":["手撑在大腿上 → 手垂在两侧或抱胸，不借力","膝盖往里夹 → 膝盖对准第二个脚趾","憋气硬撑 → 数着呼吸，慢吸慢呼"],"dg":"wallsit"},
  {"id":"calf","name":"单腿地面提踵","type":"reps","unit":"次/侧","target":15,"tip":"2 秒踮起，顶端停 1 秒，3 秒放下","cues":["单脚站立，另一只脚勾在身后，指尖轻轻扶墙保持平衡","前脚掌用力踩地，把脚跟尽量抬高，像踮脚去够高处的东西","在最高点停 1 秒","慢慢放下，用 3 秒，脚跟轻轻碰地就接着做下一个"],"feel":"小腿后侧发紧发酸。","bad":["像弹簧一样快速上下 → 放慢，尤其是放下的过程","只抬到一半 → 每一次都顶到最高","脚踝往外歪 → 把重心压在大脚趾根部","扶墙的手在用力撑 → 只用指尖轻扶"],"dg":"calf"},
  {"id":"squat","name":"自重深蹲","type":"reps","unit":"次","target":15,"tip":"屁股往后找椅子，膝盖跟着脚尖的方向走","cues":["双脚比髋略宽，脚尖稍微朝外，挺胸，双手前伸帮助平衡","先把屁股往后送，再弯膝盖往下坐，像身后有一把矮椅子","蹲到大腿和地面平行；如果脚跟要离地或者腰开始弯，就停在那之前","全脚掌踩地，脚跟发力站起来，屁股和胸口一起升，站直时呼气"],"feel":"大腿前侧和屁股在用力，腰不应该酸。","bad":["膝盖往里夹 → 膝盖始终对着第二个脚趾","脚跟离地 → 重心往后放，或者蹲浅一点","站起时屁股先翘、上身趴下去 → 想着胸口和屁股同时上升","弯腰驼背 → 挺胸，眼睛看正前方"],"dg":"squat"},
@@ -469,9 +585,10 @@ const pad=n=>String(n).padStart(2,'0');
 const mmss=sec=>{sec=Math.max(0,Math.round(sec));return pad(Math.floor(sec/60))+':'+pad(sec%60)};
 const dur=sec=>{const m=Math.round(sec/60);return m<60?m+' 分钟':Math.floor(m/60)+' 小时 '+(m%60)+' 分'};
 const dayKey=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
-function fig(ex,cls){
+function fig(ex,cls,map){
   if(ex&&ex.img)return `<img class="thumb ${cls||''}" src="${ex.img}" alt="">`;
-  return muscles(muOf(ex),cls,ex?h(ex.name)+'发力部位':'');
+  const m=muOf(ex),lb=ex?h(ex.name)+'示意图':''; // 内置动作画姿势，自建动作没有姿势数据，画正背面肌肉图
+  return ex&&PZ[ex.dg]&&!map?poses(ex.dg,m,cls,lb):muscles(m,cls,lb);
 }
 function teachDo(e){ // 做动作时看：步骤，最后用一句话收尾
   return (e.cues&&e.cues.length?`<section class="card"><ol class="cues">${e.cues.map(c=>`<li>${h(c)}</li>`).join('')}</ol></section>`:'')
@@ -530,12 +647,11 @@ function vHome(){
       <svg viewBox="0 0 216 216" aria-hidden="true"><circle class="trk" cx="108" cy="108" r="92"/>${arc?`<circle class="arc" cx="108" cy="108" r="92" stroke-dasharray="${arc} ${C}" transform="rotate(-90 108 108)"/>`:''}</svg>
       <span class="core bear"></span><span class="playb" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.6v14.8a1.2 1.2 0 0 0 1.8 1l12.4-7.4a1.2 1.2 0 0 0 0-2L8.8 3.6a1.2 1.2 0 0 0-1.8 1z"/></svg></span></button>
     <h1>${h(t.name)}</h1>
-    <p class="sub">${t.items.length?t.items.length+' 个动作 · '+t.items.reduce((m,i)=>m+i.sets,0)+' 组':'还没有动作，点按添加'}</p>
-    <p class="sub2"><span>本周 ${w.count} / ${goal} 天</span></p></section>`;
+    <p class="sub">${t.items.length?t.items.length+' 个动作 · '+t.items.reduce((m,i)=>m+i.sets,0)+' 组':'还没有动作，点按添加'}</p></section>`;
   return `<div class="top"><span></span><a class="me" href="#me">${WHO}</a></div>
   <div class="hpager" id="hp">${S.templates.map(page).join('')}
     <section class="hpage"><button class="ringbtn plus" data-act="tpl-new" aria-label="新建项目"><svg viewBox="0 0 216 216" aria-hidden="true"><circle class="trk" cx="108" cy="108" r="92"/></svg><span class="core"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" style="fill:none;stroke-width:2.6;stroke-linecap:round"/></svg></span></button>
-    <h1>新建项目</h1><p class="sub">从动作库里挑动作，组成自己的训练</p><p class="sub2">&nbsp;</p></section>
+    <h1>新建项目</h1><p class="sub">从动作库里挑动作，组成自己的训练</p></section>
   </div>
   <div class="pgdots">${S.templates.map((x,q)=>`<button class="${q===k?'on':''}" data-act="pg" data-k="${q}" aria-label="${h(x.name)}"></button>`).join('')}<button class="add${k===n?' on':''}" data-act="pg" data-k="${n}" aria-label="新建项目">+</button></div>`;
 }
@@ -583,7 +699,7 @@ function vSettings(){
     ${ok?'<button class="btn ghost" data-act="st-off" data-confirm="断开 Strava 连接？|断开连接">断开连接</button>':''}
   </section>`:''}
   <p class="foot">训练结束后，会自动在 Strava 新建一条力量训练，写入每个动作的组数和次数。没网时先存着，下次打开再传。</p>
-  <p class="foot">训练记录只保存在这台手机上。版本 22</p>`;
+  <p class="foot">训练记录只保存在这台手机上。版本 23</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -611,7 +727,7 @@ function shTpl(s){
 }
 function shEx(s){
   const e=exById(s.id);if(!e)return shHead('动作不存在');
-  return shHead(h(e.name),s.back?`<button class="btn sm" data-act="open-tpl" data-id="${s.back}">返回</button>`:'')+`<div class="body">${fig(e,'figbig')}
+  return shHead(h(e.name),s.back?`<button class="btn sm" data-act="open-tpl" data-id="${s.back}">返回</button>`:'')+`<div class="body">${fig(e,'figbig')}${PZ[e.dg]&&!e.img?fig(e,'figmap',1):''}
     ${e.type==='time'?'':`<p class="mute small" style="text-align:center">每组目标 ${e.target} ${h(e.unit)}</p>`}
     ${teach(e)||'<p class="mute">还没有填写教学内容。</p>'}</div>
     <footer><button class="btn" data-act="ex-edit" data-id="${e.id}">编辑</button><button class="btn go" data-act="close">知道了</button></footer>`;

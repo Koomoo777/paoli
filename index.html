@@ -442,6 +442,17 @@ body:has(#wk.on) .bear,body:has(#sheet.on) .bear{animation-play-state:paused}
 .hero .links button{min-height:20px;line-height:20px}
 .xhead h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:28px}
 .restbox{flex:none!important;height:var(--rh,230px);min-height:0;max-height:none}
+/* ===== 第 25 版：组数框变窄，单位并到数字右边，小人更大且不被裁切 ===== */
+.wk .list>.hero{position:relative}
+.hero .chips{width:44px;gap:4px}
+.hero .chip{flex:0 1 calc((var(--hh,232px) - 40px)/5);border-radius:10px;gap:1px}
+.hero .chip b{font-size:15px}.hero .chip small{font-size:9px;letter-spacing:-.2px}
+.hero .fig{height:calc(var(--hh,232px) - 84px);margin-bottom:2px}
+.hero .thumb{width:calc(var(--hh,232px) - 84px);height:calc(var(--hh,232px) - 84px)}
+.hero .stepper{gap:5px}
+.hero .stepper input.big{width:76px}
+.hero .stepper .u{font:600 14px var(--round);color:var(--mute);align-self:flex-end;margin:0 4px 9px -4px;white-space:nowrap}
+.hero .undo{position:absolute;top:8px;right:8px;min-height:28px;padding:0 10px;border-radius:99px;background:var(--h-cream2);border:2px solid var(--h-line);font:600 12px var(--round);color:var(--h-ink)}
 </style>
 </head>
 <body>
@@ -558,16 +569,30 @@ function frontPose(d,m){
   if(d.band)o+=`<polyline class="band" points="${d.band}"/>`;
   return o;
 }
-function poses(key,m,cls,label){ // 所有动作用同一个画框（186×104），小人一样大，地面在同一条线上
-  const d=PZ[key];m={p:(m&&m.p)||[],s:(m&&m.s)||[]};let x=0,out='';
-  d.forEach((q,k)=>{
-    const P=[q.hd].concat(q.v?[...q.sh,...q.hp,...q.legs.flat(),...q.arms.flat()]:[q.sh,q.hp,...q.leg,...(q.far||[]),...q.arm]),xs=P.map(c=>c[0]);
-    let a=Math.min(...xs)-9,b=Math.max(...xs)+9;
-    (q.pr||[]).forEach(t=>t.split(' ').forEach(c=>{const v=+c.split(',')[0];a=Math.min(a,v-2);b=Math.max(b,v+2)}));
-    if(k){out+=`<path class="pp" d="M${x+3} 52h10m-4-4 4 4-4 4"/>`;x+=16}
-    out+=`<g transform="translate(${r1(x-a)} 0)">${q.nofloor?'':`<polyline class="pp" points="${a+2},93.6 ${b-2},93.6"/>`}${(q.pr||[]).map(t=>`<polyline class="pp" points="${t}"/>`).join('')}${(q.v?frontPose:sidePose)(q,m)}</g>`;x+=b-a;
-  });
-  return `<svg class="fig pz ${cls||''}" viewBox="${r1((x-186)/2)} -7 186 104" role="img" aria-label="${label||''}">${out}</svg>`;
+function poseBox(q){ // 一个姿势实际占的范围
+  const P=[q.hd].concat(q.v?[...q.sh,...q.hp,...q.legs.flat(),...q.arms.flat()]:[q.sh,q.hp,...q.leg,...(q.far||[]),...q.arm]),xs=P.map(c=>c[0]),ys=P.map(c=>c[1]);
+  let a=Math.min(...xs)-9,b=Math.max(...xs)+9,t=Math.min(...ys)-9,u=q.nofloor?Math.max(...ys)+7:95.5;
+  (q.pr||[]).forEach(z=>z.split(' ').forEach(c=>{const [x,y]=c.split(',').map(Number);a=Math.min(a,x-2);b=Math.max(b,x+2);t=Math.min(t,y-2);u=Math.max(u,y+2)}));
+  return {a,b,t,u};
+}
+function poseLay(key){ // 站着的两个姿势左右排，躺着的上下排；返回内容和它的宽高
+  const d=PZ[key],bx=d.map(poseBox),sideW=bx.reduce((m,b)=>m+b.b-b.a,0)+16*(d.length-1),stackH=bx.reduce((m,b)=>m+b.u-b.t,0)+13*(d.length-1);
+  const lying=d.length>1&&sideW>1.6*stackH;let out='',W=0,H=0;
+  if(lying){
+    W=Math.max(...bx.map(b=>b.b-b.a));
+    d.forEach((q,k)=>{const b=bx[k];if(k){out+=`<path class="pp" d="M${r1(W/2)} ${r1(H+1)}v9m-4-4 4 4 4-4"/>`;H+=13}out+=`@${k}@${r1((W-(b.b-b.a))/2-b.a)}@${r1(H-b.t)}@`;H+=b.u-b.t});
+  }else{
+    const T=Math.min(...bx.map(b=>b.t));H=Math.max(...bx.map(b=>b.u))-T;
+    d.forEach((q,k)=>{const b=bx[k];if(k){out+=`<path class="pp" d="M${r1(W+3)} ${r1(52-T)}h10m-4-4 4 4-4 4"/>`;W+=16}out+=`@${k}@${r1(W-b.a)}@${r1(-T)}@`;W+=b.b-b.a});
+  }
+  return {out,W,H};
+}
+let PBOX=null;
+function poses(key,m,cls,label){ // 所有内置动作共用一个画框：取所有动作里最宽和最高的，人一样大，也不会被裁掉
+  if(!PBOX){PBOX={W:0,H:0};for(const k in PZ){const l=poseLay(k);PBOX.W=Math.max(PBOX.W,l.W);PBOX.H=Math.max(PBOX.H,l.H)}}
+  m={p:(m&&m.p)||[],s:(m&&m.s)||[]};const d=PZ[key],L=poseLay(key);
+  const body=L.out.replace(/@(\d+)@([-\d.]+)@([-\d.]+)@/g,(_,k,dx,dy)=>{const q=d[+k],b=poseBox(q);return `<g transform="translate(${dx} ${dy})">${q.nofloor?'':`<polyline class="pp" points="${r1(b.a+2)},93.6 ${r1(b.b-2)},93.6"/>`}${(q.pr||[]).map(z=>`<polyline class="pp" points="${z}"/>`).join('')}${(q.v?frontPose:sidePose)(q,m)}</g>`});
+  return `<svg class="fig pz ${cls||''}" viewBox="${r1((L.W-PBOX.W)/2)} ${r1((L.H-PBOX.H)/2)} ${r1(PBOX.W)} ${r1(PBOX.H)}" role="img" aria-label="${label||''}">${body}</svg>`;
 }
 const SEED_EX=[{"id":"wallsit","name":"靠墙静蹲","type":"time","unit":"秒","target":45,"tip":"背后像有一把看不见的椅子，坐稳不动","cues":["背靠墙站好，双脚往前走一大步，两脚与髋同宽","后背贴着墙往下滑，滑到大腿和地面平行，像坐在椅子上","低头看一眼：膝盖在脚踝正上方，不超过脚尖，也不往里夹","双手自然垂在身体两侧或抱在胸前，正常呼吸，开始计时"],"feel":"大腿前侧发酸发热。如果是膝盖疼，就往上滑高一点。","bad":["手撑在大腿上 → 手垂在两侧或抱胸，不借力","膝盖往里夹 → 膝盖对准第二个脚趾","憋气硬撑 → 数着呼吸，慢吸慢呼"],"dg":"wallsit"},
  {"id":"calf","name":"单腿地面提踵","type":"reps","unit":"次/侧","target":15,"tip":"2 秒踮起，顶端停 1 秒，3 秒放下","cues":["单脚站立，另一只脚勾在身后，指尖轻轻扶墙保持平衡","前脚掌用力踩地，把脚跟尽量抬高，像踮脚去够高处的东西","在最高点停 1 秒","慢慢放下，用 3 秒，脚跟轻轻碰地就接着做下一个"],"feel":"小腿后侧发紧发酸。","bad":["像弹簧一样快速上下 → 放慢，尤其是放下的过程","只抬到一半 → 每一次都顶到最高","脚踝往外歪 → 把重心压在大脚趾根部","扶墙的手在用力撑 → 只用指尖轻扶"],"dg":"calf"},
@@ -672,7 +697,7 @@ function vMoves(){
   return `<div class="top"><a href="#prefs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>设置</a><span></span></div><div class="head"><h1>动作与要点</h1><button class="btn sm go" data-act="ex-new">添加动作</button></div>
   <div class="grid">${S.exercises.map(e=>`<button class="tile" data-act="open-ex" data-id="${e.id}">${fig(e)}<b>${h(e.name)}</b><span class="mute small">${e.type==='time'?'计时':e.target+' '+h(e.unit)}</span></button>`).join('')}</div>`;
 }
-function stPill(s){const k=(s.strava||{}).state;return k==='done'?'<span class="pill ok">已同步</span>':k==='busy'?'<span class="pill wait">上传中</span>':k==='retry'?'<span class="pill wait">等待重试</span>':k==='error'?'<span class="pill bad">同步失败</span>':'<span class="pill">未同步</span>'}
+function stPill(s){const k=(s.strava||{}).state;return k==='merged'?'<span class="pill ok">已合并</span>':k==='wait'?'<span class="pill wait">等 Apple 健康</span>':k==='done'?'<span class="pill ok">已同步</span>':k==='busy'?'<span class="pill wait">上传中</span>':k==='retry'?'<span class="pill wait">等待重试</span>':k==='error'?'<span class="pill bad">同步失败</span>':'<span class="pill">未同步</span>'}
 function vMe(){
   const w=weekInfo();
   const list=S.sessions.length?`<section class="card" style="gap:0;padding-top:2px;padding-bottom:2px">${S.sessions.map(s=>{const d=new Date(s.start);
@@ -711,8 +736,9 @@ function vSettings(){
     <button class="btn" data-act="st-paste">用这个网址完成连接</button>
     ${ok?'<button class="btn ghost" data-act="st-off" data-confirm="断开 Strava 连接？|断开连接">断开连接</button>':''}
   </section>`:''}
-  <p class="foot">训练结束后，会自动在 Strava 新建一条力量训练，写入每个动作的组数和次数。没网时先存着，下次打开再传。</p>
-  <p class="foot">训练记录只保存在这台手机上。版本 24</p>`;
+  ${ok&&c.noRead?`<p class="note">需要重新授权一次，App 才能找到 Apple 健康导入的记录。<a href="${h(authUrl())}">现在重新授权</a></p>`:''}
+  <p class="foot">训练结束后，先等 Apple Watch 的这次训练从 Apple 健康导入 Strava，再把动作和每组的数值写进那一条；3 小时内没等到，就自己新建一条。之前 App 单独建的会并进 Apple 那条。</p>
+  <p class="foot">训练记录只保存在这台手机上。版本 25</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -772,8 +798,11 @@ function shSession(s){
     <div class="stats"><div><b>${Math.max(1,Math.round((x.end-x.start)/6e4))}</b><span class="mute small">分钟</span></div><div><b>${sets}</b><span class="mute small">完成组数</span></div><div><b>${x.items.filter(i=>i.sets.some(y=>y.done)).length}</b><span class="mute small">动作</span></div></div>
     ${rows?`<div>${rows}</div>`:'<p class="mute">没有完成的组。</p>'}
     <div class="row">${stPill(x)}<span class="mute small grow">${h(st.msg||(conn?'':'连接 Strava 后会自动上传'))}</span></div>
-    ${st.state==='done'&&st.id?`<a class="btn" href="https://www.strava.com/activities/${st.id}">在 Strava 查看</a>`:''}
-    ${conn&&st.state!=='done'?`<div class="row"><button class="btn grow" data-act="s-sync" data-id="${x.id}">重新同步</button></div>`:''}
+    ${st.state==='wait'?'<p class="mute small">在等 Apple Watch 的这次训练导入 Strava，找到后把动作和组数写进那一条。3 小时内没等到，就自己新建一条。</p>':''}
+    ${(st.state==='done'||st.state==='merged')&&st.id?`<a class="btn" href="https://www.strava.com/activities/${st.id}">在 Strava 查看</a>`:''}
+    ${st.dup?`<p class="mute small">之前 App 新建的那条已改名为“重复记录，可删除”并从动态里隐藏。Strava 不允许别的 App 删除活动，需要你自己删掉。</p><a class="btn ghost" href="https://www.strava.com/activities/${st.dup}">去删除重复的那条</a>`:''}
+    ${conn&&st.state==='wait'?`<button class="btn" data-act="s-sync" data-id="${x.id}">不等了，直接新建</button>`:''}
+    ${conn&&!/done|merged|wait|busy/.test(st.state||'')?`<div class="row"><button class="btn grow" data-act="s-sync" data-id="${x.id}">重新同步</button></div>`:''}
     <button class="btn ghost" data-act="s-del" data-id="${x.id}" data-confirm="删除这条记录？|删除记录">删除记录</button></div>
     <footer><button class="btn go" data-act="close">完成</button></footer>`;
 }
@@ -833,12 +862,12 @@ function drawWk(){
   const it=curItem(),i=a.cur,n=a.items.length,j=it.sets.findIndex(x=>!x.done),e=exById(it.exId)||{};
   const ed=a.ed!=null&&it.sets[a.ed]&&it.sets[a.ed].done?a.ed:null;   // 正在回头修改的那一组
   const tot=a.items.reduce((m,x)=>m+x.sets.length,0),dn=a.items.reduce((m,x)=>m+x.sets.filter(y=>y.done).length,0),fin=allDone();
-  const stepper=k=>`<div class="stepper"><button data-act="bump" data-d="-1" aria-label="减一">−</button><input id="v-${i}-${k}" class="big num" type="number" inputmode="numeric" data-f="set" data-i="${i}" data-j="${k}" value="${h(it.sets[k].val)}" aria-label="本组数量"><button data-act="bump" data-d="1" aria-label="加一">+</button></div>${ed!=null?'':`<div class="unit">${h(it.unit)}</div>`}`;
+  const stepper=k=>`<div class="stepper"><button data-act="bump" data-d="-1" aria-label="减一">−</button><input id="v-${i}-${k}" class="big num" type="number" inputmode="numeric" data-f="set" data-i="${i}" data-j="${k}" value="${h(it.sets[k].val)}" aria-label="本组数量"><span class="u">${h(it.unit)}</span><button data-act="bump" data-d="1" aria-label="加一">+</button></div>`;
   let main,btn;
   if(ed!=null){main=stepper(ed);btn='<button class="btn go lg wide" data-act="ed-done">改好了</button>'}
   else if(fin){main='<div class="big num">'+dn+'</div><div class="unit">组，全部完成</div>';btn='<button class="btn go lg wide" data-act="w-end">结束训练</button>'}
   else if(j<0){main='<div class="big num">'+it.sets.length+'</div><div class="unit">组，已完成</div>';btn='<button class="btn go lg wide" data-act="w-nextopen">去下一个没做完的动作</button>'}
-  else if(it.type==='time'){main=`<div class="big num">00:00</div><div class="unit">秒</div>`;btn=`<button class="btn go lg wide" data-act="hold" data-i="${i}" data-j="${j}">开始计时</button>`}
+  else if(it.type==='time'){main=`<div class="big num">00:00</div>`;btn=`<button class="btn go lg wide" data-act="hold" data-i="${i}" data-j="${j}">开始计时</button>`}
   else{main=stepper(j);btn=`<button class="btn go lg wide" data-act="chk" data-i="${i}" data-j="${j}">完成第 ${j+1} 组</button>`}
   const vj=ed!=null?ed:j;
   const kg=it.weighted&&vj>=0?`<label class="kg" for="w-${i}-${vj}">负重<input id="w-${i}-${vj}" type="number" inputmode="decimal" data-f="setw" data-i="${i}" data-j="${vj}" value="${h(it.sets[vj].w||'')}">kg</label>`:'';
@@ -849,7 +878,7 @@ function drawWk(){
   <div class="prog"><i style="width:${tot?dn/tot*100:0}%"></i></div>
   <div class="list">
     <div class="xhead"><h1>${h(it.name)}</h1>${a.pAt?'<span class="pill wait">已暂停</span>':''}</div>
-    <section class="card hero"><div class="chips${it.sets.length>6?' many':''}">${chips}</div><div class="heromain">${fig(e)}${main}${kg}${ed!=null?'<div class="links"><button data-act="ed-undo">标为没做</button></div>':''}</div></section>
+    <section class="card hero"><div class="chips${it.sets.length>6?' many':''}">${chips}</div><div class="heromain">${fig(e)}${main}${kg}</div>${ed!=null?'<button class="undo" data-act="ed-undo">标为没做</button>':''}</section>
     ${teachDo(e)}
   </div>
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':btn}</footer></div>`;
@@ -859,12 +888,12 @@ const elapsed=a=>((a.pAt||Date.now())-a.start-(a.pz||0))/1000;
 function fitAll(){ // 把每个动作页都量一遍，取最挤那一页需要的缩放给所有页用，这样每页的卡片、小人、字号都一样
   const a=S.active,el=$('#wk');if(!a||!ui.wk)return;const key=innerWidth+'x'+innerHeight+'|'+a.id+'|'+a.items.length;if(ui.fk===key)return;
   const keep=[a.cur,a.ed,T];T=null;a.ed=null;el.classList.add('on');a.cur=0;ui.kk=1;drawWk();
-  const l0=$('#wk .list'),L=l0.clientHeight;let hh=Math.max(196,Math.round((l0.clientWidth-125)*104/186)+112),k=1; // 卡片最高到小人撑满宽度为止，再高也画不大
+  const l0=$('#wk .list'),L=l0.clientHeight;fig(exById('squat'));let hh=Math.max(170,Math.round((l0.clientWidth-117)*PBOX.H/PBOX.W)+84),k=1; // 卡片最高到小人撑满宽度为止，再高也画不大
   el.style.setProperty('--rh',Math.max(170,Math.min(250,Math.round(L*.33)))+'px');
   for(let n=0;n<14;n++){ // 屏幕矮时宁可字小一点（不低于 0.84），也不把图压得太扁
     el.style.setProperty('--hh',hh+'px');k=1;
     a.items.forEach((_,i)=>{a.cur=i;ui.kk=1;drawWk();k=Math.min(k,+$('#wk .list').style.getPropertyValue('--k')||1)});
-    if(k>=(hh>230?1:.84)||hh<=196)break;hh=Math.max(196,hh-8);
+    if(k>=(hh>200?1:.84)||hh<=170)break;hh=Math.max(170,hh-8);
   }
   a.cur=keep[0];a.ed=keep[1];T=keep[2];ui.kk=k;ui.fk=key;
 }
@@ -920,13 +949,13 @@ function finishWorkout(){
   S.sessions.unshift(s);S.active=null;T=null;ui.wk=false;save();
   try{wake&&wake.release()}catch(e){}
   ui.sheet={t:'session',id:s.id};if(route()!=='home'){ui.keep=true;location.hash='home'}render();
-  if(S.settings.strava.tok)syncSession(s);
+  if(S.settings.strava.tok){s.strava={state:'wait',msg:''};save();sweep(true)}
 }
 
 /* ---------- Strava ---------- */
 const ST='https://www.strava.com';
 const redirectUri=()=>location.origin+location.pathname;
-function authUrl(){return ST+'/oauth/authorize?client_id='+encodeURIComponent(S.settings.strava.clientId)+'&redirect_uri='+encodeURIComponent(redirectUri())+'&response_type=code&approval_prompt=auto&scope=activity:write'}
+function authUrl(){return ST+'/oauth/authorize?client_id='+encodeURIComponent(S.settings.strava.clientId)+'&redirect_uri='+encodeURIComponent(redirectUri())+'&response_type=code&approval_prompt=auto&scope=activity:write,activity:read_all'}
 async function tokenReq(p){
   const c=S.settings.strava;let r;
   try{r=await fetch(ST+'/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:c.clientId,client_secret:c.clientSecret,...p})})}
@@ -940,13 +969,15 @@ async function api(path,opt){
   opt=opt||{};let r;
   try{r=await fetch(ST+'/api/v3'+path,{method:opt.method||'GET',body:opt.body,headers:{Authorization:'Bearer '+c.tok.a,...(opt.type?{'Content-Type':opt.type}:{})}})}
   catch(e){throw new Error('连不上 Strava，请检查网络')}
-  if(r.status===401)throw new Error('Strava 授权已失效，请在设置里重新授权');
+  if(r.status===401){let t='';try{t=await r.text()}catch(e){}
+    if(/read_permission|activity:read/.test(t)){c.noRead=true;save();const er=new Error('需要在设置里重新授权一次，才能找到 Apple 健康的记录');er.noRead=true;throw er}
+    throw new Error('Strava 授权已失效，请在设置里重新授权')}
   if(r.status===429)throw new Error('Strava 请求太频繁，稍后再试');
   if(!r.ok)throw new Error('Strava 返回错误 '+r.status);
-  return r.json();
+  return r.status===204?{}:r.json();
 }
-async function finishAuth(code){
-  try{await tokenReq({code,grant_type:'authorization_code'});ui.msg='已连接 Strava。'}catch(e){ui.msg=e.message}
+async function finishAuth(code,scope){
+  try{await tokenReq({code,grant_type:'authorization_code'});const c=S.settings.strava;c.scope=scope||'';c.noRead=!/activity:read/.test(c.scope||'activity:read');save();ui.msg='已连接 Strava。'}catch(e){ui.msg=e.message}
   render();retryPending();
 }
 const localIso=t=>{const d=new Date(t);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds())+'Z'};
@@ -958,10 +989,49 @@ async function syncSession(s){ // 训练结束后在 Strava 新建一条力量�
   }catch(e){s.strava={state:/连不上/.test(e.message)?'retry':'error',msg:e.message}}
   save();render();
 }
-function retryPending(){ // 上次因为没网没传上去的，打开 App 时再试
-  if(!S.settings.strava.tok)return;
-  S.sessions.filter(s=>s.strava&&s.strava.state==='retry'&&Date.now()-s.end<3*864e5).slice(0,3).forEach(s=>syncSession(s));
+/* 和 Apple 健康的记录合并：Apple Watch 记下的力量训练由 Strava 从 Apple 健康导入，带心率和卡路里。
+   App 结束后先不新建，而是去 Strava 找时间重叠的那一条，把名称和每组的数值写进去；3 小时内没找到才自己新建一条。
+   之前 App 已经新建过的，找到 Apple 那条后也并过去：Strava 不允许别的 App 删除活动，所以把 App 那条改名为“重复记录，可删除”并从动态里隐藏。 */
+const WAIT=3*36e5;
+const ownIds=()=>new Set(S.sessions.flatMap(x=>{const t=x.strava||{};return [t.id,t.dup].filter(Boolean).map(String)}));
+function findApple(s,list,taken){ // 时间重叠最多、不是 App 自己建的、也不是跑步之类有距离的
+  const a0=s.start-6e5,a1=s.end+6e5;let best=null,bo=0;
+  list.forEach(v=>{if(taken.has(String(v.id))||(v.distance||0)>500)return;
+    const b0=Date.parse(v.start_date),b1=b0+(v.elapsed_time||0)*1000,o=Math.min(a1,b1)-Math.max(a0,b0);
+    if(o>Math.min(s.end-s.start,b1-b0)*.3&&o>bo){bo=o;best=v}});
+  return best;
 }
+async function mergeInto(s,v){
+  await api('/activities/'+v.id,{method:'PUT',type:'application/x-www-form-urlencoded',body:new URLSearchParams({name:s.name,description:logText(s)})});
+  const own=s.strava&&s.strava.state==='done'&&s.strava.id&&String(s.strava.id)!==String(v.id)?s.strava.id:null;
+  if(own){try{await api('/activities/'+own,{method:'PUT',type:'application/x-www-form-urlencoded',body:new URLSearchParams({name:'重复记录，可删除',hide_from_home:'true'})})}catch(e){}}
+  s.strava={state:'merged',id:v.id,dup:own,msg:''};
+}
+let sweeping=false;
+async function sweep(force){ // 打开 App、回到前台、每分钟（有在等的记录时）各跑一次
+  const c=S.settings.strava;if(!c.tok||sweeping)return;const now=Date.now();
+  S.sessions.filter(s=>s.strava&&s.strava.state==='retry'&&now-s.end<3*864e5).slice(0,3).forEach(s=>syncSession(s)); // 没网没传上去的
+  const look=S.sessions.filter(s=>{const t=s.strava||{};if(now-s.end>30*864e5)return false; // Strava 只导入 30 天内的 Apple 健康记录
+    if(t.state==='wait')return force||!t.chk||now-t.chk>45e3;
+    if(t.state==='done'&&t.id)return force||!t.chk||now-t.chk>(now-s.end<WAIT*8?9e5:6*36e5);
+    return false});
+  if(!look.length)return;
+  if(c.noRead){look.filter(s=>s.strava.state==='wait').forEach(s=>syncSession(s));return} // 没有读取权限：照旧直接新建
+  sweeping=true;
+  try{
+    const from=Math.min(...look.map(s=>s.start)),to=Math.max(...look.map(s=>s.end));
+    const list=await api('/athlete/activities?per_page=100&after='+Math.floor((from-WAIT)/1000)+'&before='+Math.ceil((to+WAIT)/1000));
+    const taken=ownIds();
+    for(const s of look){
+      const v=findApple(s,list,taken);
+      if(v){taken.add(String(v.id));try{await mergeInto(s,v)}catch(e){s.strava.msg=e.message}}
+      else{s.strava.chk=Date.now();if(s.strava.state==='wait'&&Date.now()-s.end>WAIT){sweeping=false;await syncSession(s);sweeping=true}}
+    }
+  }catch(e){if(e.noRead)look.filter(s=>s.strava.state==='wait').forEach(s=>syncSession(s));}
+  sweeping=false;save();render();
+}
+function retryPending(){sweep()}
+setInterval(()=>{if(!document.hidden&&S.sessions.some(s=>s.strava&&s.strava.state==='wait'))sweep()},6e4);
 
 /* ---------- 事件 ---------- */
 function armed(b){ // 危险操作要点两次
@@ -1015,7 +1085,7 @@ const A={
   's-sync'(b){syncSession(S.sessions.find(s=>s.id===b.dataset.id));return false},
   rest(b){S.settings.rest=Math.min(300,Math.max(0,S.settings.rest+ +b.dataset.d));save()},
   'st-off'(){const c=S.settings.strava;c.tok=null;c.athlete='';ui.msg='已断开 Strava。';save()},
-  'st-paste'(){const v=$('#st-paste').value.trim(),m=v.match(/[?&]code=([^&\s]+)/);const code=m?m[1]:(/^[0-9a-f]{20,}$/i.test(v)?v:'');if(!code){ui.msg='没有在这段文字里找到授权码，请粘贴跳转后的完整网址。';return}finishAuth(code);return false},
+  'st-paste'(){const v=$('#st-paste').value.trim(),m=v.match(/[?&]code=([^&\s]+)/);const code=m?m[1]:(/^[0-9a-f]{20,}$/i.test(v)?v:'');if(!code){ui.msg='没有在这段文字里找到授权码，请粘贴跳转后的完整网址。';return}const sc=v.match(/[?&]scope=([^&\s]+)/);finishAuth(code,sc?decodeURIComponent(sc[1]):'');return false},
   'st-toggle'(){ui.stOpen=!ui.stOpen},
   'snd-test'(){prime();tickS();setTimeout(beep,450);return false},
   'snd-loud'(){haptic();S.settings.loud=!S.settings.loud;applyAudio();save();prime()},
@@ -1110,7 +1180,7 @@ render();
   let q;try{q=new URLSearchParams(location.search)}catch(e){return}
   const code=q.get('code'),err=q.get('error');
   if(code||err){try{history.replaceState(null,'',location.pathname+'#prefs')}catch(e){}
-    if(code)finishAuth(code);else{ui.msg='你在 Strava 取消了授权。';render()}}
+    if(code)finishAuth(code,q.get('scope'));else{ui.msg='你在 Strava 取消了授权。';render()}}
   else retryPending();
 })();
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}

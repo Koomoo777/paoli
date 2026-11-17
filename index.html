@@ -428,6 +428,20 @@ body:has(#wk.on) .bear,body:has(#sheet.on) .bear{animation-play-state:paused}
 .wk .btn.tint{background:var(--h-cream2);color:var(--h-ink);border:2.5px solid var(--h-line)}
 .wk .list{padding-bottom:calc(env(safe-area-inset-bottom) + 86px)}
 .wk .bar .r [data-act="w-finish"]{color:var(--red)}
+/* ===== 第 24 版：每个动作页同一个版式 ===== */
+.wk .list>.hero{flex:none;height:var(--hh,232px);min-height:0;max-height:none;gap:10px}
+.hero .chips{width:54px;gap:5px}
+.hero .chip{flex:0 1 calc((var(--hh,232px) - 49px)/5);max-height:none;border-radius:11px;gap:2px;overflow:hidden}
+.hero .chip b{font-size:16px}.hero .chip small{font-size:10px}
+.hero .chips.many small{display:none}
+.hero .fig{flex:none;width:100%;height:calc(var(--hh,232px) - 112px);margin-bottom:4px}
+.hero .thumb{width:calc(var(--hh,232px) - 112px);height:calc(var(--hh,232px) - 112px)}
+.hero .big,.hero .stepper input.big{font-size:48px;line-height:1.08}
+.hero .stepper button{width:44px;height:44px}
+.hero .unit,.hero .links{height:20px;line-height:20px;font-size:14px}
+.hero .links button{min-height:20px;line-height:20px}
+.xhead h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:28px}
+.restbox{flex:none!important;height:var(--rh,230px);min-height:0;max-height:none}
 </style>
 </head>
 <body>
@@ -544,17 +558,16 @@ function frontPose(d,m){
   if(d.band)o+=`<polyline class="band" points="${d.band}"/>`;
   return o;
 }
-function poses(key,m,cls,label){ // 每个姿势按实际占的宽度裁掉两边空白，图才画得大
-  const d=PZ[key];m={p:(m&&m.p)||[],s:(m&&m.s)||[]};let x=0,top=99,out='';
+function poses(key,m,cls,label){ // 所有动作用同一个画框（186×104），小人一样大，地面在同一条线上
+  const d=PZ[key];m={p:(m&&m.p)||[],s:(m&&m.s)||[]};let x=0,out='';
   d.forEach((q,k)=>{
-    const P=[q.hd].concat(q.v?[...q.sh,...q.hp,...q.legs.flat(),...q.arms.flat()]:[q.sh,q.hp,...q.leg,...(q.far||[]),...q.arm]);
-    (q.pr||[]).forEach(t=>t.split(' ').forEach(c=>P.push(c.split(',').map(Number))));
-    const xs=P.map(c=>c[0]),a=Math.min(...xs)-11,b=Math.max(...xs)+11;top=Math.min(top,...P.map(c=>c[1]));
+    const P=[q.hd].concat(q.v?[...q.sh,...q.hp,...q.legs.flat(),...q.arms.flat()]:[q.sh,q.hp,...q.leg,...(q.far||[]),...q.arm]),xs=P.map(c=>c[0]);
+    let a=Math.min(...xs)-9,b=Math.max(...xs)+9;
+    (q.pr||[]).forEach(t=>t.split(' ').forEach(c=>{const v=+c.split(',')[0];a=Math.min(a,v-2);b=Math.max(b,v+2)}));
     if(k){out+=`<path class="pp" d="M${x+3} 52h10m-4-4 4 4-4 4"/>`;x+=16}
     out+=`<g transform="translate(${r1(x-a)} 0)">${q.nofloor?'':`<polyline class="pp" points="${a+2},93.6 ${b-2},93.6"/>`}${(q.pr||[]).map(t=>`<polyline class="pp" points="${t}"/>`).join('')}${(q.v?frontPose:sidePose)(q,m)}</g>`;x+=b-a;
   });
-  top=Math.floor(top-11);
-  return `<svg class="fig pz ${cls||''}" viewBox="0 ${top} ${r1(x)} ${97-top}" role="img" aria-label="${label||''}">${out}</svg>`;
+  return `<svg class="fig pz ${cls||''}" viewBox="${r1((x-186)/2)} -7 186 104" role="img" aria-label="${label||''}">${out}</svg>`;
 }
 const SEED_EX=[{"id":"wallsit","name":"靠墙静蹲","type":"time","unit":"秒","target":45,"tip":"背后像有一把看不见的椅子，坐稳不动","cues":["背靠墙站好，双脚往前走一大步，两脚与髋同宽","后背贴着墙往下滑，滑到大腿和地面平行，像坐在椅子上","低头看一眼：膝盖在脚踝正上方，不超过脚尖，也不往里夹","双手自然垂在身体两侧或抱在胸前，正常呼吸，开始计时"],"feel":"大腿前侧发酸发热。如果是膝盖疼，就往上滑高一点。","bad":["手撑在大腿上 → 手垂在两侧或抱胸，不借力","膝盖往里夹 → 膝盖对准第二个脚趾","憋气硬撑 → 数着呼吸，慢吸慢呼"],"dg":"wallsit"},
  {"id":"calf","name":"单腿地面提踵","type":"reps","unit":"次/侧","target":15,"tip":"2 秒踮起，顶端停 1 秒，3 秒放下","cues":["单脚站立，另一只脚勾在身后，指尖轻轻扶墙保持平衡","前脚掌用力踩地，把脚跟尽量抬高，像踮脚去够高处的东西","在最高点停 1 秒","慢慢放下，用 3 秒，脚跟轻轻碰地就接着做下一个"],"feel":"小腿后侧发紧发酸。","bad":["像弹簧一样快速上下 → 放慢，尤其是放下的过程","只抬到一半 → 每一次都顶到最高","脚踝往外歪 → 把重心压在大脚趾根部","扶墙的手在用力撑 → 只用指尖轻扶"],"dg":"calf"},
@@ -699,7 +712,7 @@ function vSettings(){
     ${ok?'<button class="btn ghost" data-act="st-off" data-confirm="断开 Strava 连接？|断开连接">断开连接</button>':''}
   </section>`:''}
   <p class="foot">训练结束后，会自动在 Strava 新建一条力量训练，写入每个动作的组数和次数。没网时先存着，下次打开再传。</p>
-  <p class="foot">训练记录只保存在这台手机上。版本 23</p>`;
+  <p class="foot">训练记录只保存在这台手机上。版本 24</p>`;
 }
 
 /* ---------- 弹层 ---------- */
@@ -805,7 +818,7 @@ function renderWk(){
   if(!on){ui.pw='';if(!prev){el.classList.remove('on','out');el.innerHTML='';return}
     const tok=ui.wTok=(ui.wTok||0)+1;el.classList.add('out');setTimeout(()=>{if(ui.wTok!==tok)return;el.classList.remove('on','out');el.innerHTML=''},380);return}
   ui.wTok=(ui.wTok||0)+1;el.classList.remove('out');
-  drawWk();
+  fitAll();drawWk();
   const nl=el.querySelector('.list');
   if(prev===key){if(nl)nl.scrollTop=top}
   else if(!prev)anim(el,'coverIn');
@@ -820,12 +833,12 @@ function drawWk(){
   const it=curItem(),i=a.cur,n=a.items.length,j=it.sets.findIndex(x=>!x.done),e=exById(it.exId)||{};
   const ed=a.ed!=null&&it.sets[a.ed]&&it.sets[a.ed].done?a.ed:null;   // 正在回头修改的那一组
   const tot=a.items.reduce((m,x)=>m+x.sets.length,0),dn=a.items.reduce((m,x)=>m+x.sets.filter(y=>y.done).length,0),fin=allDone();
-  const stepper=k=>`<div class="stepper"><button data-act="bump" data-d="-1" aria-label="减一">−</button><input id="v-${i}-${k}" class="big num" type="number" inputmode="numeric" data-f="set" data-i="${i}" data-j="${k}" value="${h(it.sets[k].val)}" aria-label="本组数量"><button data-act="bump" data-d="1" aria-label="加一">+</button></div><div class="unit">${h(it.unit)}</div>`;
+  const stepper=k=>`<div class="stepper"><button data-act="bump" data-d="-1" aria-label="减一">−</button><input id="v-${i}-${k}" class="big num" type="number" inputmode="numeric" data-f="set" data-i="${i}" data-j="${k}" value="${h(it.sets[k].val)}" aria-label="本组数量"><button data-act="bump" data-d="1" aria-label="加一">+</button></div>${ed!=null?'':`<div class="unit">${h(it.unit)}</div>`}`;
   let main,btn;
   if(ed!=null){main=stepper(ed);btn='<button class="btn go lg wide" data-act="ed-done">改好了</button>'}
   else if(fin){main='<div class="big num">'+dn+'</div><div class="unit">组，全部完成</div>';btn='<button class="btn go lg wide" data-act="w-end">结束训练</button>'}
   else if(j<0){main='<div class="big num">'+it.sets.length+'</div><div class="unit">组，已完成</div>';btn='<button class="btn go lg wide" data-act="w-nextopen">去下一个没做完的动作</button>'}
-  else if(it.type==='time'){main=`<div class="big num">00:00</div>`;btn=`<button class="btn go lg wide" data-act="hold" data-i="${i}" data-j="${j}">开始计时</button>`}
+  else if(it.type==='time'){main=`<div class="big num">00:00</div><div class="unit">秒</div>`;btn=`<button class="btn go lg wide" data-act="hold" data-i="${i}" data-j="${j}">开始计时</button>`}
   else{main=stepper(j);btn=`<button class="btn go lg wide" data-act="chk" data-i="${i}" data-j="${j}">完成第 ${j+1} 组</button>`}
   const vj=ed!=null?ed:j;
   const kg=it.weighted&&vj>=0?`<label class="kg" for="w-${i}-${vj}">负重<input id="w-${i}-${vj}" type="number" inputmode="decimal" data-f="setw" data-i="${i}" data-j="${vj}" value="${h(it.sets[vj].w||'')}">kg</label>`:'';
@@ -836,15 +849,27 @@ function drawWk(){
   <div class="prog"><i style="width:${tot?dn/tot*100:0}%"></i></div>
   <div class="list">
     <div class="xhead"><h1>${h(it.name)}</h1>${a.pAt?'<span class="pill wait">已暂停</span>':''}</div>
-    <section class="card hero"><div class="chips">${chips}</div><div class="heromain">${fig(e)}${main}${kg}${ed!=null?'<div class="links"><button data-act="ed-undo">标为没做</button></div>':''}</div></section>
+    <section class="card hero"><div class="chips${it.sets.length>6?' many':''}">${chips}</div><div class="heromain">${fig(e)}${main}${kg}${ed!=null?'<div class="links"><button data-act="ed-undo">标为没做</button></div>':''}</div></section>
     ${teachDo(e)}
   </div>
   <footer>${a.pAt?'<button class="btn go lg wide" data-act="w-pause">继续训练</button>':btn}</footer></div>`;
   fitWk();paintTick();
 }
 const elapsed=a=>((a.pAt||Date.now())-a.start-(a.pz||0))/1000;
-function fitWk(){ // 一屏放下：图和圆环先让出高度，还放不下就把文字整体缩一点
-  const l=$('#wk .list');if(!l)return;let k=1;l.style.setProperty('--k',k);
+function fitAll(){ // 把每个动作页都量一遍，取最挤那一页需要的缩放给所有页用，这样每页的卡片、小人、字号都一样
+  const a=S.active,el=$('#wk');if(!a||!ui.wk)return;const key=innerWidth+'x'+innerHeight+'|'+a.id+'|'+a.items.length;if(ui.fk===key)return;
+  const keep=[a.cur,a.ed,T];T=null;a.ed=null;el.classList.add('on');a.cur=0;ui.kk=1;drawWk();
+  const l0=$('#wk .list'),L=l0.clientHeight;let hh=Math.max(196,Math.round((l0.clientWidth-125)*104/186)+112),k=1; // 卡片最高到小人撑满宽度为止，再高也画不大
+  el.style.setProperty('--rh',Math.max(170,Math.min(250,Math.round(L*.33)))+'px');
+  for(let n=0;n<14;n++){ // 屏幕矮时宁可字小一点（不低于 0.84），也不把图压得太扁
+    el.style.setProperty('--hh',hh+'px');k=1;
+    a.items.forEach((_,i)=>{a.cur=i;ui.kk=1;drawWk();k=Math.min(k,+$('#wk .list').style.getPropertyValue('--k')||1)});
+    if(k>=(hh>230?1:.84)||hh<=196)break;hh=Math.max(196,hh-8);
+  }
+  a.cur=keep[0];a.ed=keep[1];T=keep[2];ui.kk=k;ui.fk=key;
+}
+function fitWk(){ // 兜底：个别页面还放不下时再单独缩一点
+  const l=$('#wk .list');if(!l)return;let k=ui.kk||1;l.style.setProperty('--k',k);
   while(l.scrollHeight>l.clientHeight+1&&k>.66){k-=.03;l.style.setProperty('--k',k.toFixed(2))}
 }
 function paintTick(){
@@ -1071,7 +1096,7 @@ function fitH(){ // iPhone 桌面图标模式下系统给的初始高度偏短�
   const a=Math.max(screen.height,screen.width),b=Math.min(screen.height,screen.width),port=matchMedia('(orientation:portrait)').matches;
   document.documentElement.style.setProperty('--H',Math.max(innerHeight,port?a:b)+'px');
 }
-fitH();addEventListener('resize',()=>{fitH();fitWk()});addEventListener('orientationchange',()=>setTimeout(fitH,300));setTimeout(()=>{fitH();try{scrollTo(0,0)}catch(e){}},300);
+fitH();addEventListener('resize',()=>{fitH();if(ui.wk&&S.active)renderWk()});addEventListener('orientationchange',()=>setTimeout(fitH,300));setTimeout(()=>{fitH();try{scrollTo(0,0)}catch(e){}},300);
 if((S.v||1)<3){ // 第 3 版：内置动作换成新的教学内容
   SEED_EX.forEach(n=>{const e=exById(n.id);if(e){e.tip=n.tip;e.cues=n.cues.slice();e.feel=n.feel;e.bad=n.bad.slice();e.dg=n.dg}});S.v=3;save();
 }
